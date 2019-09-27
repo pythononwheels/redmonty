@@ -8,7 +8,7 @@ import simplejson as json
 from redmonty.models.redis.redisinfo import Redisinfo
 from redmonty.models.tinydb.connections import Connections
 import datetime
-from redmonty.config import myapp
+from redmonty.config import myapp, redisui
 
 class EchoWebSocket(PowWsHandler):
 
@@ -107,7 +107,7 @@ class EchoWebSocket(PowWsHandler):
         """
         r=self.get_client(message["client_id"])
         
-        result=r.db.scan(message["data"]["cursor"], match=message["data"]["data"]+"*", count=5)
+        result=r.db.scan(message["data"]["cursor"], match=message["data"]["data"]+"*", count=redisui["scan_max"])
         print(f"scanning: ...cursor={message['data']['cursor']} match={message['data']} : {str(result)}")
         data = {
                 "method"    :   "scan",

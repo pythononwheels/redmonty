@@ -158,8 +158,9 @@ database = {
 }
 
 redisui = {
-    "update_freq"   :   3000,   # miliseconds
-    "redis_conf"    :   "/etc/redis/redis.conf" # only if running on the redis host...
+    "update_freq"   :   3000,                       # miliseconds
+    "redis_conf"    :   "/etc/redis/redis.conf",    # only if running on the redis host...
+    "scan_max"      :   5
 }
 
 mydash={
