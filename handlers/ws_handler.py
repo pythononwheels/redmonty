@@ -106,8 +106,9 @@ class EchoWebSocket(PowWsHandler):
             scan db keys and return the result 
         """
         r=self.get_client(message["client_id"])
-        result=r.db.scan(0, match=message["data"]+"*", count=5)
-        print(f"scanning: ... match={message['data']} : {str(result)}")
+        
+        result=r.db.scan(message["data"]["cursor"], match=message["data"]["data"]+"*", count=5)
+        print(f"scanning: ...cursor={message['data']['cursor']} match={message['data']} : {str(result)}")
         data = {
                 "method"    :   "scan",
                 "type"      :   "scan",

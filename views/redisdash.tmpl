@@ -103,7 +103,8 @@
                     <div class="row">
                         <form >                            
                             <div class="form-group">
-                                <label for="keyscan">Key(scan):</label>
+                                <label for="keyscan">scan(<span id="scan_cursor"></span>):</label>
+                                <button class="btn btn-sm btn-light" id="inc_scan_cursor"><i class="fas fa-chevron-circle-right"></i></button>
                                 <input type="text" class="form-control" 
                                     autocomplete="off"
                                     id="keyscan" placeholder="key1:key2:*">
@@ -207,7 +208,7 @@
         var ws = new WebSocket("ws://localhost:8080/websocket");
         var editor = ace.edit("reditor");
         var serverinfo_data;
-
+        var last_scan_cursor = 0;
         //editor.setTheme("ace/theme/dracula");
         editor.setTheme("ace/theme/github");
         editor.session.setMode("ace/mode/json");
@@ -241,7 +242,7 @@
             console.log("I received: data['type'] :" + data["type"])
             switch (data["type"]) {
                 case "info":
-                    // update the info boxes
+                    // update the info boxes (cards)
                     console.log("ok: info");
                     modalLoading.init(false);
                     console.log(JSON.stringify(data["data"], null, 2));
@@ -256,38 +257,39 @@
                     $("#serverinfo_code").text(JSON.stringify(data["data"], null, '\t'),-1)
                     break;
                 case "message":
-                    // display the message in an alter
+                    // display the message in an alert
                     $("#result").text(data["data"]);
                     $("#result").show();
                     break;
                 case "getval":
-                    // display the message in an alter
+                    // display the value in the editor
                     $("#scanres").text(JSON.stringify(data["data"], null, 2))
                     var key=$("#current_key").text();
                     $("#current_key_input").val(key);
                     editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);          
                     break;
                 case "disconnect":
-                    // display the message in an alter
+                    // display the message in the #feedback alert box
                     console.log("redirecting to: " + JSON.stringify(data["data"]));
+                    // and redirect
                     window.location.href = data["data"]
                     break;
                 case "update":
-                    // display the message in an alter
+                    // display the message in the #feedback alert box
                     //$("#scanres").text(JSON.stringify(data["data"], null, 2))
                     //editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);
                     $("#feedback").text(JSON.stringify(data["data"], null, 2));
                     break;
                 
                 case "create":
-                    // display the message in an alter
+                    /// display the message in the #feedback alert box
                     //$("#scanres").text(JSON.stringify(data["data"], null, 2))
                     //editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);
                     $("#feedback").text(JSON.stringify(data["data"], null, 2));
                     break;
 
                 case "delete":
-                    // display the message in an alter
+                    // display the message in the #feedback alert box
                     //$("#scanres").text(JSON.stringify(data["data"], null, 2))
                     //editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);
                     $("#feedback").text(JSON.stringify(data["data"], null, 2));
@@ -296,10 +298,13 @@
                     break;
 
                 case "scan":
-                    // display the message in an alter
+                    // get the scan(pattern) results (paged, default = 5)
                     $("#scanres").text(JSON.stringify(data["data"], null, 2))
+                    // key = data["data"][0]
+                    // value list = data["data"][1]
                     //console.log("Liste 0:" +data["data"][0])
                     //console.log("Liste 1:" + data["data"][1])
+                    last_scan_cursor = data["data"][0]
                     var list=data["data"][1] 
                     $("#keys").empty();
                     for(var elem=0; elem<list.length; elem++){
@@ -351,7 +356,11 @@
         $( "#keyscan" ).keypress(function(event) {
             //console.log( "key:" + String.fromCharCode(event.which) );
             console.log($("#keyscan").val())
-            send_msg(method="scan", data=$("#keyscan").val()+String.fromCharCode(event.which));
+            send_msg(method="scan", data={
+                "cursor": 0,
+                "data"  : $("#keyscan").val()+String.fromCharCode(event.which)
+                }
+            );
         });
 
         $("#disconnect").click(function(){
@@ -368,6 +377,20 @@
             send_msg(method="update", data={"value": editor.getValue(), "key" : key });
 
         });
+        $("#inc_scan_cursor").click(function(){
+            // update the value of the current_key
+            $("#feedback").removeClass();
+            $("#feedback").addClass("alert alert-info");
+            var key=$("#current_key").text();
+            $("#feedback").text("Scanning: " + last_scan_cursor);
+            $("#scan_cursor").text(last_scan_cursor);
+            send_msg(method="scan", data={
+                "cursor": last_scan_cursor,
+                "data"  : $("#keyscan").val()
+                }
+            );
+        });
+
         $("#link_serverinfo").click(function(e){
             // update the value of the current_key
             e.preventDefault();
@@ -438,8 +461,9 @@
             
             // called from the parent view's docready function.
             modalLoading.init(true);
-            $("#serverinfo_div").hide()
-            $("#cli_div").hide()
+            $("#serverinfo_div").hide();
+            $("#cli_div").hide();
+            $("#scan_cursor").text(last_scan_cursor);
             
         }   
     </script>
