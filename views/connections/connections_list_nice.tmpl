@@ -1,0 +1,77 @@
+
+<!-- change your base view as needed or delete the reference -->
+{% extends "../base.bs4" %}
+
+{% block include_css %}
+    <!-- your view specific css includes here -->
+{% end %}
+
+{% block view_css %}
+    <!-- put your directly embedded view css here -->
+    <style>
+      
+    </style>
+
+{% end %}
+
+
+{% block content %}
+    <!-- your view's main content here -->
+    <div class="row">
+        <a class="btn btn-dark" href="/connections/new">
+            <i class="fas fa-plus"></i> create new connection
+        </a>
+    </div>
+    <div class="container" style="padding-top: 20px">
+        
+            <div class="card-columns">
+                {% for elem in data %}
+                <div class="card" style="width: 18rem;">
+                        
+                        <div class="card-body">
+                        <h5 class="card-title">
+                            <img 
+                                src="{{static_url("images/redis_logo.png")}}" 
+                                class="card-img-top" alt="redis logo"
+                                style="width: 40%"
+                            >
+                            <div>
+                                DB: {{elem.dbname}}
+                            </div>
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Host: {{elem.host[0:20]}}</h6>
+                        port: {{elem.port}}, Strict: {{elem.strict}}
+                        <div style="padding-top: 5px">
+                            
+                                <a href='/connections/{{elem.id}}/edit'class="btn btn-sm btn-secondary card-link">Edit</a>
+                            
+                                <a href='/connect/{{elem.id}}'class="btn btn-sm btn-success card-link">
+                                    <i class="fas fa-link"></i> connect
+                                </a>
+                        </div>
+                        </div>
+                    </div>
+                {% end %}
+            </div>
+        
+    </div>
+
+{% end %}
+
+{% block include_js %}
+    <!-- your view specific js includes here -->
+    
+{% end %}
+
+{% block view_js %}
+    <script>
+        
+        function view_docready(){    
+            // this will be automatically 
+            // called from the parent view's docready function.
+           
+            $("#result").hide()
+        }
+    </script>
+
+{% end %}

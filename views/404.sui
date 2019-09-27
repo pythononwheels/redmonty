@@ -1,0 +1,46 @@
+    {% extends "base.sui" %}
+{% block content %}
+    
+    <div class="ui grid">
+        <div class="row">
+            <div class="one wide column">
+                &nbsp;
+            </div>
+            <div class="seven wide column" >
+                <img src={{ static_url("images/404_4.png")}} width="75%"/>
+                <p class="ui header">    
+                    Hm, maybe you want to restart from here:  <a href="/">Home</a>
+                </p>
+            </div>
+            
+            <div class="seven wide column">
+                
+                <div class="ui error message" role="alert">
+                    <h1 class="alert-heading">Oh no-This URL cannot be Found. </h1> 
+                </div>
+                
+                {% try %}
+                    <div class="ui header message"><b>HTTP Status:</b>  {{status}} </div>
+                {% except %}
+                {% end %}
+                {% try %}
+                    <div class="ui error message"><b>Message:</b> {{message}} </div>
+                {% except %}
+                {% end %}
+                {% try %}
+                    <div class="ui warning message"><b>URI:</b> {{request.path}} </div>
+                {% except %}
+                {% end %}
+                {% try %}
+                    <div class="ui message"><b>Request:</b> {{request}} </div>
+                {% except %}
+                {% end %}
+            </div>
+            <div class="one wide column">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+
+
+{% end %}

@@ -1,0 +1,17 @@
+# stats info
+https://www.inovex.de/blog/redis-cli/
+
+# adminlte
+https://github.com/ColorlibHQ/AdminLTE/releases/tag/v3.0.0-rc.1
+
+#ace editor
+https://ace.c9.io/
+
+#ace edito themes
+https://ace.c9.io/build/kitchen-sink.html
+
+=> dark dracula
+
+#pyhton  logo thans
+
+<a href="https://iconscout.com/icon/python-13" target="_blank">Python Logo Icon</a> by <a href="https://iconscout.com/contributors/icons8" target="_blank">Icons8</a>

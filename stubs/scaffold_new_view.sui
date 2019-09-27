@@ -1,0 +1,145 @@
+{% extends ../base_no_footer.sui %}
+
+{% block include_css %}
+    <link rel="stylesheet" href="{{ static_url("css/calendar.css")}}" />
+    
+{% end %}
+
+{% block include_js %}
+    <!--script
+			  src="https://code.jquery.com/jquery-2.2.4.js"
+			  integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+			  crossorigin="anonymous">
+    </script-->
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.serializeJSON/2.8.1/jquery.serializejson.js"></script-->
+    <script type="text/javascript" src="{{ static_url("js/calendar.js")}} "></script>
+
+{% end %}
+
+{% block view_js %}
+
+<script>
+    function docready(){   
+        $("#message-div").hide();
+        $('#example1').calendar();
+        $("#create_form").submit(function()
+            {
+                var data = $("#create_form").serializeJSON();
+                console.log( data );
+                var jsonString = JSON.stringify(data);
+                console.log(jsonString);
+                $.ajax({
+                        url : "/{{handler_name}}",
+                        type: "POST",
+                        data : jsonString,
+                        success: function(data, textStatus, jqXHR)
+                        {
+                            $("#message-div").hide();
+                            var od = JSON.stringify(data);
+                            var obj = JSON.parse(data);
+                            //alert("success sending put: " + data + textStatus)
+                            console.log(obj);
+                            $("#message-div").attr("class", "ui positive message");
+                            $("#message-div").append(
+                                "<i class='close icon'></i><div class='header'>Well done!</div><p>You successfully created:</p>" + od
+                            );
+                            $("#message-div").show();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown)
+                        {
+                            console.log(jqXHR);
+                            $("#message-div").hide();
+                            $("#message-div").attr("class", "ui positive message");
+                            $("#message-div").append(
+                                "<i class='close icon'></i><div class='header'>Oh NO! Error!</div> <p>creating the new dataset.</p>" 
+                            );
+                            $("#message-div").show();
+                        }
+                    });  
+            return false;   
+        });
+    }
+</script>
+
+{% end %}
+
+{% block content %}
+    <!-- Begin page content -->
+    <div class="ui grid container">
+        
+        
+        <div class="two wide column">
+            &nbsp;
+        </div>
+
+        <div class="twelve wide column">
+            <div class="row">
+                <div class="ui blue message">
+                    <div class="header">This is the <strong>{{handler_name}}</strong> Create view </div>
+                    <p class="lead">Just go Ahead and create your data below</p>
+                </div>
+                <div id="message-div" class="">
+                    <!-- this div is filled late by javascrupt (see above) -->
+                </div>
+            </div>
+            <div class="row">
+                <form id="create_form" name="create_form" class="ui form">
+                    {% for key in model.schema.keys() %}
+                        {% if key not in cfg.myapp["internal_fields"] %}
+                            {% set _type = model.schema[key]["type"] %}
+                            {% if  _type == "string" %}
+                            <div class="inline field">
+                                <label for="{{key}}">{{key}}</label>
+                                <input  type="text" class="form-control" name="{{key}}" id="{{key}}" value="" />
+                            </div>    
+                            {% elif _type == "number" or _type == "integer" or _type == "float" %}
+                            <div class="inline field">
+                                <label for="{{key}}" >{{key}}</label>
+                                <input  type="text" class="form-control" name="{{key}}:number" id="{{key}}" 
+                                        value="" />
+                            </div>
+                            {% elif _type == "boolean" %}
+                            <div class="inline field">
+                                <div class="ui checkbox">
+                                    <input class="hidden" type="checkbox" name="{{key}}" id="{{key}}"> {{key}}
+                                    <label>{{key}}</label>  
+                                </div>
+                            </div>
+                            {% elif _type == "datetime" or _type == "date" %}
+                            <div class="inline field">
+                                <label for="{{key}}">{{key}}</label>
+                                <div class="ui calendar" id="example1">
+                                    <div class="ui input left icon">
+                                    <i class="calendar icon"></i>
+                                    <input type="text" placeholder="Date/Time" id="{{key}}" name="{{key}}">
+                                    </div>
+                                </div>
+                            </div>
+                            {% elif  _type == "list" %}
+                            <div class="inline fields">
+                                <label for="{{key}}">{{key}}</label>
+                                <input  type="text" name="{{key}}" id="{{key}}" value="" placeholder="one, two, three"/>
+                            </div>    
+                            {% end %}
+                        {% end %}
+                    {% end %}
+                    
+            
+                    <a href="/{{base_route_rest}}" class="ui button">Back to {{handler_name}}.list</a>
+                    <input type="submit" class="ui green button" id="submit_create_form" value="create item">
+                </form>
+                <p>
+                    &nbsp;
+                </p>
+                <h2>Raw Data: </h2>
+                {{data}}
+                
+                <h2>Schema: </h2>
+                {{model.schema}}
+            </div>
+        </div>
+        <div class="two wide column">
+            &nbsp;
+        </div>
+    </div>
+{% end %}

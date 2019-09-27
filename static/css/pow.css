@@ -1,0 +1,45 @@
+.jumbotron{
+	margin-bottom: 0rem;
+}
+
+@media (min-width: 576px) {
+  .jumbotron {
+    /*padding: 4rem 2rem;*/
+    padding: 3rem 1rem 1rem;	
+	}
+}
+.navpow a:visited {
+  color: darkgreen;
+}
+.navpow a:link {
+    color: black;
+    text-decoration: none;
+  }
+.navpow a:hover
+  {
+    color: orange;
+    
+  }
+
+.navpow a:active
+  {
+    color: green;
+    
+  }
+hr{
+    padding: 3px;
+    margin: 1px;    
+    color: green;
+} 
+
+
+.middle {
+  vertical-align: middle;
+}
+
+.top-buffer-20 { margin-top:20px; }
+.top-buffer-40 { margin-top:40px; }
+.top-buffer-60 { margin-top:60px; }
+.top-buffer-80 { margin-top:80px; }
+.top-buffer-100 { margin-top:100px; }
+.top-buffer-120 { margin-top:120px; }

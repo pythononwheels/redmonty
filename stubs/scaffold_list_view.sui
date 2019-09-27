@@ -1,0 +1,106 @@
+{% extends ../base_no_footer.sui %}
+
+{% block include_js %}
+    <!--script
+			  src="https://code.jquery.com/jquery-2.2.4.js"
+			  integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+			  crossorigin="anonymous">
+    </script-->
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.serializeJSON/2.8.1/jquery.serializejson.js"></script-->
+{% end %}
+
+{% block js %}
+
+<script>
+    $(document).ready(function(){   
+        $(".negative").click(function(e)
+            {
+                console.log( "btn_delete: " + $(e.currentTarget).attr("value"));
+                var id = $(e.currentTarget).attr("value");
+                var data = jsonString = JSON.stringify({"id" : id});
+                console.log(data)
+                $.ajax({
+                        url : "/{{handler_name}}/" + id,
+                        type: "DELETE",
+                        data : data,
+                        success: function(data, textStatus, jqXHR)
+                        {
+                            
+                            var od = JSON.stringify(data);
+                            var obj = JSON.parse(data);
+                            //alert("success sending put: " + data + textStatus)
+                            console.log(obj);
+                            var curr_tr = $("#"+id);
+                            curr_tr.fadeOut();                            
+                            
+
+                        },
+                        error: function (jqXHR, textStatus, errorThrown)
+                        {
+                            console.log(jqXHR);
+                            var curr_tr = $("#"+id);
+                            curr_tr.fadeTo(100, 0.3, function() { $(this).fadeTo(500, 1.0); });
+                           // try fadeTo(0000)
+                        }
+                    });   // <--- end ajax
+                
+            });
+    });
+</script>
+{% end %}
+
+{% block content %}
+<!-- Begin page content -->
+<div class="ui container">
+    <div>
+        <div class="ui container">
+            <h1 class="display-3">This is the <strong>{{handler_name}}</strong> list view </h1>
+            <p class="lead">Just go Ahead and show, edit or delete your data below using the action links.</p>
+            <p class="lead">Of course you can also 
+            <a class="ui green button" href="/{{base_route_rest}}/new">Create</a> 
+            </button>
+                a new {{model_name}} here.</p>
+        </div>
+    </div>
+    
+    <table class="ui celled table">
+            <thead>
+                <tr>
+                    {% for key in model.schema.keys() %}
+                        <th>{{key}}</th>
+                    {% end %}
+                    <th colspan="3">Actions:</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for elem in data %}
+                    <tr id="{{elem.get("id")}}">
+                    {% for key in elem.schema.keys() %}
+                        <td>{{getattr(elem, key)}}</td>
+                    {% end %}
+                    <td>                           
+                        <button class="ui primary basic button">
+                            <a href='/{{base_route_rest}}/{{getattr(elem, "id")}}'>Show</a>
+                        </button>
+                    </td>
+                    <td>
+                        <button class="ui positive basic button">
+                            <a href='/{{base_route_rest}}/{{getattr(elem, "id")}}/edit'class="btn btn-warning">Edit</a>
+                        </button>
+                    </td>
+                    <td>
+                        
+                        <button class="ui negative basic button" value="{{elem.get("id")}}">Delete</a>
+                    </td>
+                    </tr>
+                {% end %}
+        </tbody>
+    </table>
+    <hr>
+    <h2>Info: </h2>
+    <hr>
+    <b>ModelClass:</b> {{ str(type(model)) }}
+    <hr>
+base route rest: {{base_route_rest}}
+</div>
+{% end %}

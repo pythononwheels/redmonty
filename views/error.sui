@@ -1,0 +1,52 @@
+{% extends "base.sui" %}
+{% block content %}
+    
+    <div class="ui grid"> 
+        <div class="row">
+            <div class="one wide column">
+                &nbsp;
+            </div>
+            <div class="seven wide column" >
+                <img src={{ static_url("images/bug.png")}} width="80%"/>
+            </div>
+        
+            <div class="seven wide column">
+                <div class="ui warning message">
+                    <h1 class="alert-heading">Oh no! An Error occured. </h1> 
+                </div>
+                <p class="ui header">    
+                    Sorry, this should not have happended!
+                </p>
+                {% try %}
+                    <div class="ui message"><b>HTTP Status:</b> {{status}} </div>
+                {% except %}
+                {% end %}
+                
+                {% try %}
+                    <div class="ui error message"><b>Message:</b> {{message}} </div>
+                {% except %}
+                {% end %}
+                
+                {% try %}
+                    <div class="ui message"><b>Data:</b> {{data}} </div>
+                {% except %}
+                {% end %}
+                
+                {% try %}
+                    <div class="ui warning message"><b>URI:</b> {{request.path}} </div>
+                {% except %}
+                {% end %}
+
+                {% try %}
+                    <div class="ui message"><b>Request:</b>
+                            {{request}} 
+                    </div>
+                {% except %}
+                {% end %}
+            </div>
+            <div class="one wide column">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+{% end %}
