@@ -104,7 +104,15 @@
                         <form >                            
                             <div class="form-group">
                                 <label for="keyscan">scan(<span id="scan_cursor"></span>):</label>
-                                <button class="btn btn-sm btn-light" id="inc_scan_cursor"><i class="fas fa-chevron-circle-right"></i></button>
+                                <button class="btn btn-sm btn-light" 
+                                        id="inc_scan_cursor"
+                                        data-toggle="tooltip" data-placement="top" title="get next page of keys">
+                                    <i class="fas fa-chevron-circle-right"></i>
+                                </button>
+                                <button class="btn btn-sm btn-light" id="scan_reset"
+                                        data-toggle="tooltip" data-placement="right" title="reset scan pattern and cursor">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
                                 <input type="text" class="form-control" 
                                     autocomplete="off"
                                     id="keyscan" placeholder="key1:key2:*">
@@ -391,6 +399,19 @@
             );
         });
 
+        $("#scan_reset").click(function(){
+            // update the value of the current_key
+            $("#feedback").removeClass();
+            $("#feedback").addClass("alert alert-info");
+            var key=$("#current_key").text();
+            $("#feedback").text("reset scan cursor and pattern: " + last_scan_cursor);
+            last_scan_cursor = 0;
+            $("#scan_cursor").text(last_scan_cursor);
+            $("#keyscan").val("");
+            clear_all();
+            $("#keys").empty();
+        });
+
         $("#link_serverinfo").click(function(e){
             // update the value of the current_key
             e.preventDefault();
@@ -465,6 +486,9 @@
             $("#cli_div").hide();
             $("#scan_cursor").text(last_scan_cursor);
             
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
         }   
     </script>
 
