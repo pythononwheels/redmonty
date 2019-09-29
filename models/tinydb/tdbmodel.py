@@ -1,9 +1,9 @@
 #
-# TinyDB Model:  Connections
+# TinyDB Model:  Tdbmodel
 #
 from redmonty.models.tinydb.tinymodel import TinyModel
 
-class Connections(TinyModel):
+class Tdbmodel(TinyModel):
 
     #
     # Use the cerberus schema style 
@@ -11,21 +11,17 @@ class Connections(TinyModel):
     # http://docs.python-cerberus.org/en/stable/validation-rules.html
     # types: http://docs.python-cerberus.org/en/stable/validation-rules.html#type
     #
-    schema = {
-        "type"      :   { "type" : "string", "allowed" : ["redis", "tinydb"], "default" : "redis"},
-        'dbname'    :   { 'type' : 'string', "default" : "" },
-        'host'      :   { 'type' : 'string', "default" : "localhost" },
-        'port'      :   { 'type' : 'integer', "default" : 6379 },
-        'user'      :   { 'type' : 'string'},
-        "passwd"    :   { 'type' : 'string', "default" : "" },
-        "strict"    :   { "type" : "boolean", "default" : True}
-        }
+    schema = { }
 
     
+
     # define class attributes/variables here that should be included in to_dict() 
     # conversion and also handed to the encoders but that are NOT part of the schema.
     include_attributes=[]
     
+    # Toggle to  use the pow schema extensions (id, created_at, last_updated) 
+    _use_pow_schema_attrs = False
+
     #
     # init
     #

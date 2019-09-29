@@ -6,7 +6,7 @@ import xmltodict
 import simplejson as json
 import datetime, decimal
 from redmonty.config import myapp
-from redmonty.database.tinydblib import tinydb
+from redmonty.database.tinydblib import generate_connection
 from redmonty.powlib import merge_two_dicts
 from redmonty.models.modelobject import ModelObject
 import uuid
@@ -17,7 +17,9 @@ class TinyBaseModel(ModelObject):
     
     where=where
     Query=Query()
-    db=tinydb
+    db=generate_connection()
+    _use_pow_schema_attrs = True
+    
     def init_on_load(self, *args, **kwargs):
         
         super().init_on_load()
@@ -31,7 +33,7 @@ class TinyBaseModel(ModelObject):
         #
         # all further Db operations will work on the table
         #
-        self.table = tinydb.table(self.tablename)
+        self.table = self.db.table(self.tablename)
         self.where = where
 
         self.basic_schema = {
@@ -41,7 +43,8 @@ class TinyBaseModel(ModelObject):
             "created_at"    : { "type" : "datetime" },
             "last_updated"    : { "type" : "datetime" },
         }
-        self.setup_instance_schema()
+        if self.__class__._use_pow_schema_attrs:
+            self.setup_instance_schema()
         #
         # if there is a schema (cerberus) set it in the instance
         #
@@ -135,13 +138,13 @@ class TinyBaseModel(ModelObject):
             created the physical table in the DB
         """
         if not self.table:
-            self.table = tinydb.table(self.tablename)
+            self.table = self.db.table(self.tablename)
 
     def drop_table(self):
         """
             drop the physical table from the DB
         """
-        tinydb.purge_table(self.tablename)
+        self.db.purge_table(self.tablename)
     
     def delete(self):
         """

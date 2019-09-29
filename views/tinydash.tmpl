@@ -1,0 +1,498 @@
+{% extends "base.bs4" %}
+
+{% block include_css %}
+    <!--link href="{{static_url("css/prism.css")}}" rel="stylesheet" /-->
+    <link href="{{static_url("css/highlight-styles/hopscotch.css")}}" rel="stylesheet" /-->
+{% end %}
+
+{% block view_css %}
+ <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      #accordion{
+        width:400px;
+        position:absolute;
+        bottom:0;
+        }
+    </style>
+
+{% end %}
+
+{% block content %}
+    <div class="" id="dbmanager_div">
+        <div class="container">
+            <div class="card-deck">
+                
+                <!--div class="col-lg-4"-->
+                        <div class="card text-white bg-dark mb-3" >
+                            <div class="card-header">Connected to </div>
+                            <div class="card-body">
+                                <h7 class="card-title" id="host"></h7>
+                                <h7 class="card-title" id="db"></h7>
+                                
+                                <h5>DB: <span id="dbname"></span></h5>
+                                <select class="form-control" id="exampleFormControlSelect1" disabled>
+                                    <option selected>0</option>
+                                    {% for x in db.tables()  %}
+                                        <option>{{x}}</option>
+                                    {% end %}}
+                                </select>
+                                
+                                <p class="card-text">&nbsp;</p>
+                            </div>
+                        </div>
+                <!--/div-->
+                <!--div class="col-lg-4"-->
+                        <div class="card text-white bg-dark mb-3" >
+                            <div class="card-header">Clients</div>
+                            <div class="card-body">
+                                <h5 class="card-title" id="clients_info"></h5>
+                                <button class="btn btn-danger" id="disconnect">
+                                    <i class="fas fa-unlink"></i>
+                                    disconnect
+                                </button>
+                                <p class="card-text">&nbsp;</p>
+                            </div>
+                        </div>
+                <!--/div-->
+                <!--div class="col-lg-4"-->
+                        <div class="card text-white bg-dark mb-3">
+                            <div class="card-header">
+                                <img src="{{static_url('images/tinydb_logo.png')}}">
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>
+                                        <h7 class="card-title">TinyDB:</h7>
+                                        <span id="tinydb_version"></span>
+                                    </li>
+                                    <li>
+                                            <h7 class="card-title"> Mode:</h7>
+                                            <span id="redis_mode"></span>
+                                        </li>
+                                    <li>
+                                        <h7 class="card-title">CPU (sys):</h7>
+                                        <span id="server_info_cpu_sys"></span>
+                                    </li>
+                                    <li>
+                                        <h7 class="card-title">MEM:</h7>
+                                        <span id="server_info_mem"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                <!--/div-->
+                
+            </div>
+        </div>
+        <div class="container mt-1">
+            <!-- redis ui container -->
+            <div class="row" style="margin-left: 5px">
+                <div class="col-lg-4">
+                    <div class="row">
+                        <form >                            
+                            <div class="form-group">
+                                <label for="keyscan">scan(<span id="scan_cursor"></span>):</label>
+                                <button class="btn btn-sm btn-light" 
+                                        id="inc_scan_cursor"
+                                        data-toggle="tooltip" data-placement="top" title="get next page of keys">
+                                    <i class="fas fa-chevron-circle-right"></i>
+                                </button>
+                                <button class="btn btn-sm btn-light" id="scan_reset"
+                                        data-toggle="tooltip" data-placement="right" title="reset scan pattern and cursor">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                                <input type="text" class="form-control" 
+                                    autocomplete="off"
+                                    id="keyscan" placeholder="key1:key2:*">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row" >
+                        <ul class="list-group" id="keys" style="display: inline-block">
+
+                        </ul>
+                    </div>
+
+                </div>
+
+                <div class="col-lg-8" >
+                    <div class="form-group row" style="margin-right: 5px">
+                        <label for="staticEmail" class="col-sm-1 col-form-label">key:</label>
+                        <div class="col-sm-11">
+                            <input type="text" class="form-control" id="current_key_input" value="">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-right: 5px">
+                        <div id="reditor" style="height: 300px; width: 100%"></div>
+                        <span id="current_key" style="display: none">
+                    </div>
+                    <div class="d-flex flex-row bg-light" style="margin-top: 20px;">
+                            <div class="p-2">
+                                <button class="btn btn-info" id="update"><i class="fas fa-edit mr-1"></i>update</button>
+                            </div>
+                            <div class="p-2">
+                                <button class="btn btn-success" id="btn_create"><i class="fas fa-plus-square mr-1"></i>create</button>
+                            </div>
+                            <div class="p-2 flex-grow-1">
+                                <div class="alert alert-light" id="feedback" role="alert"></div>
+                            </div>
+                            <div class="p-2">
+                                <button class="btn btn-danger" id="btn_delete"><i class="fas fa-trash-alt mr-1"></i>delete</button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!--div class="container mt-1">
+            
+            <div class="row" style="margin-left: 5px">
+                <div class="col-lg-12">
+                    
+                    <pre style="max-height: 200px;"> <code id="scanres">
+                            &nbsp; 
+                        </code>
+                    </pre>
+                    
+                </div>
+            </div>
+        </div-->
+
+    <div class="container mt-1" id="serverinfo_div">
+        <div class="row" style="margin-left: 5px">
+            <h3 class="mt-3">Server Info(raw):</h3>
+            <div class="" style="width: 100%; overflow-y: auto !important;
+            overflow-x: auto !important; max-height: 850px">
+                    <pre>
+                        <code id="serverinfo_code"> </code>
+                    </pre>
+            </div>
+                
+        </div>
+    </div>
+        
+
+    <div class="container" id="cli_div">
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <div class="input-group">                        
+                    <input type="text" class="form-control" 
+                                autocomplete="off"
+                                id="cli" placeholder="$: (cli for onliners ;)">
+                    <span class="input-group-btn">
+                            <button class="btn btn-danger" id="fire-cli"><i class="fas fa-chevron-right"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+{% end %}
+
+{% block include_js %}
+    <script src="https://pagecdn.io/lib/ace/1.4.5/ace.js" integrity="sha256-5Xkhn3k/1rbXB+Q/DX/2RuAtaB4dRRyQvMs83prFjpM=" crossorigin="anonymous"></script>
+    <!--script src="{{static_url("js/prism.js")}}"></script-->
+    <script src="{{static_url("js/highlight.pack.js")}}"></script>
+    <script src="{{static_url("js/modalloading.js")}}"></script>
+{% end %}
+
+{% block view_js %}
+    <script>
+        
+        var clientId = generateUUID();
+        var ws = new WebSocket("ws://localhost:8080/websocket");
+        var editor = ace.edit("reditor");
+        var serverinfo_data;
+        var last_scan_cursor = 0;
+        //editor.setTheme("ace/theme/dracula");
+        editor.setTheme("ace/theme/github");
+        editor.session.setMode("ace/mode/json");
+        editor.setShowPrintMargin(false);
+        editor.renderer.setShowGutter(false);
+        /*editor.setOptions({
+            //fontFamily: "tahoma",
+            fontSize: "11pt"
+            });
+        */
+        var current_connection = "{{connection_id}}";
+
+        ws.onopen = function() {
+                data={
+                    "client_id"     : clientId,
+                    "connection_id" : current_connection,
+                    "method"        : "welcome",
+                    "data"          : "hello world."
+                }
+
+                ws.send(JSON.stringify(data));
+            };
+
+        ws.onmessage = function (evt) {
+            //
+            // checking the message type and 
+            // generate the appropriate output        
+            data=JSON.parse(evt.data);
+            console.log("I received: " + JSON.stringify(data, null, 2));
+            // if info 
+            console.log("I received: data['type'] :" + data["type"])
+            switch (data["type"]) {
+                case "info":
+                    // update the info boxes (cards)
+                    console.log("ok: info");
+                    modalLoading.init(false);
+                    console.log(JSON.stringify(data["data"], null, 2));
+                    $("#result").text(JSON.stringify(data["data"], null, 2));
+                    $("#result").show();
+                    $("#redis_version").text(data["data"]["redis_version"]);
+                    $("#redis_mode").text(data["data"]["redis_mode"]);
+                    $("#clients_info").text(data["data"]["connected_clients"]);
+                    $("#server_info_os").text("OS: " + data["data"]["os"].slice(0,30));
+                    $("#server_info_cpu_sys").text(data["data"]["used_cpu_sys"]);
+                    $("#server_info_mem").text(data["data"]["used_memory_human"]);
+                    $("#serverinfo_code").text(JSON.stringify(data["data"], null, '\t'),-1)
+                    break;
+                case "message":
+                    // display the message in an alert
+                    $("#result").text(data["data"]);
+                    $("#result").show();
+                    break;
+                case "getval":
+                    // display the value in the editor
+                    $("#scanres").text(JSON.stringify(data["data"], null, 2))
+                    var key=$("#current_key").text();
+                    $("#current_key_input").val(key);
+                    editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);          
+                    break;
+                case "disconnect":
+                    // display the message in the #feedback alert box
+                    console.log("redirecting to: " + JSON.stringify(data["data"]));
+                    // and redirect
+                    window.location.href = data["data"]
+                    break;
+                case "update":
+                    // display the message in the #feedback alert box
+                    //$("#scanres").text(JSON.stringify(data["data"], null, 2))
+                    //editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);
+                    $("#feedback").text(JSON.stringify(data["data"], null, 2));
+                    break;
+                
+                case "create":
+                    /// display the message in the #feedback alert box
+                    //$("#scanres").text(JSON.stringify(data["data"], null, 2))
+                    //editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);
+                    $("#feedback").text(JSON.stringify(data["data"], null, 2));
+                    break;
+
+                case "delete":
+                    // display the message in the #feedback alert box
+                    //$("#scanres").text(JSON.stringify(data["data"], null, 2))
+                    //editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);
+                    $("#feedback").text(JSON.stringify(data["data"], null, 2));
+                    clear_all();
+
+                    break;
+
+                case "scan":
+                    // get the scan(pattern) results (paged, default = 5)
+                    $("#scanres").text(JSON.stringify(data["data"], null, 2))
+                    // key = data["data"][0]
+                    // value list = data["data"][1]
+                    //console.log("Liste 0:" +data["data"][0])
+                    //console.log("Liste 1:" + data["data"][1])
+                    last_scan_cursor = data["data"][0]
+                    var list=data["data"][1] 
+                    $("#keys").empty();
+                    for(var elem=0; elem<list.length; elem++){
+                        //console.log("Elem: " + elem)
+                        $("#keys").append(
+                            '<a href="#" onclick="getval(this.id)" id="' + list[elem] + '"' + 
+                                'class="list-group-item list-group-item-action">' + 
+                                list[elem] +
+                                "</li>"
+                        );
+                    }
+                    break;                
+                case "error":
+                    // update the info boxes
+                    console.log("Message Error : " + JSON.stringify(data, null, 2)  );
+                    if (data["redirect"] == true ){
+                        // show the error message and redirect afterwards
+                        alert(data["message"]);
+                        window.location.href=data["redirect_url"]
+                    } else {
+                        $("#result").text(data["data"]);
+                        $("#result").show();
+                    }
+                    break;
+                default:
+                    console.log("unhandled message type: " + data["type"] + " ...Should not happen!")
+            }
+
+
+        };
+        
+        
+        function getval(id){
+            console.log("getval: " + id);
+            $("#current_key").text(id);
+            send_msg(method="getval", data=id);
+        }
+
+        function send_msg(method="NONE", data=null){
+            // sending the form message to the server
+            data={
+                "client_id" : clientId,
+                "method"    : method,
+                "data"      : data
+            }
+            ws.send(JSON.stringify(data));            
+        }
+
+        $( "#keyscan" ).keypress(function(event) {
+            //console.log( "key:" + String.fromCharCode(event.which) );
+            console.log($("#keyscan").val())
+            send_msg(method="scan", data={
+                "cursor": 0,
+                "data"  : $("#keyscan").val()+String.fromCharCode(event.which)
+                }
+            );
+        });
+
+        $("#disconnect").click(function(){
+            console.log("disconecting...from: {{connection_id}}");
+            send_msg(method="disconnect", data=current_connection);
+        });
+        
+        $("#update").click(function(){
+            // update the value of the current_key
+            $("#feedback").removeClass();
+            $("#feedback").addClass("alert alert-info");
+            var key=$("#current_key").text();
+            $("#feedback").text("Updating key: " + key);
+            send_msg(method="update", data={"value": editor.getValue(), "key" : key });
+
+        });
+        $("#inc_scan_cursor").click(function(){
+            // update the value of the current_key
+            $("#feedback").removeClass();
+            $("#feedback").addClass("alert alert-info");
+            var key=$("#current_key").text();
+            $("#feedback").text("Scanning: " + last_scan_cursor);
+            $("#scan_cursor").text(last_scan_cursor);
+            send_msg(method="scan", data={
+                "cursor": last_scan_cursor,
+                "data"  : $("#keyscan").val()
+                }
+            );
+        });
+
+        $("#scan_reset").click(function(){
+            // update the value of the current_key
+            $("#feedback").removeClass();
+            $("#feedback").addClass("alert alert-info");
+            var key=$("#current_key").text();
+            $("#feedback").text("reset scan cursor and pattern: " + last_scan_cursor);
+            last_scan_cursor = 0;
+            $("#scan_cursor").text(last_scan_cursor);
+            $("#keyscan").val("");
+            clear_all();
+            $("#keys").empty();
+        });
+
+        $("#link_serverinfo").click(function(e){
+            // update the value of the current_key
+            e.preventDefault();
+            console.log("serverinfo link: " + e)
+            var key=$("#current_key").text();
+            $("#cli_div").hide();
+            $("#dbmanager_div").hide();
+            $("#serverinfo_div").show();
+            //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
+
+        });
+        
+        $("#link_redisdb").click(function(e){
+            // update the value of the current_key
+            e.preventDefault();
+            console.log("redisdb link: " + e)
+            var key=$("#current_key").text();
+            $("#cli_div").hide();
+            $("#dbmanager_div").show();
+            $("#serverinfo_div").hide();
+            //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
+
+        });
+
+        $("#link_cli").click(function(e){
+            // update the value of the current_key
+            e.preventDefault();
+            console.log("cli link: " + e)
+            var key=$("#current_key").text();
+            $("#cli_div").show();
+            $("#dbmanager_div").hide();
+            $("#serverinfo_div").hide();
+            //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
+
+        });
+
+        
+        $("#btn_create").click(function(){
+            // update the value of the current_key
+            $("#feedback").removeClass();
+            $("#feedback").addClass("alert alert-info");
+            var key=$("#current_key_input").val()
+            $("#feedback").text("Updating key: " + key);
+            console.log("Create: " + key + " value: " + editor.getValue());
+            send_msg(method="create", data={"value": editor.getValue(), "key" : key });
+
+        });
+
+        $("#btn_delete").click(function(){
+            // update the value of the current_key
+            $("#feedback").removeClass();
+            $("#feedback").addClass("alert alert-info");
+            var key=$("#current_key").text();
+            $("#feedback").text("deleting key: " + key);
+            send_msg(method="delete", data={"value": editor.getValue(), "key" : key });
+
+        });
+
+
+        hljs.initHighlightingOnLoad();
+        function clear_all(){
+            $("#keyscan").val("");
+            $("#current_key_input").val("");
+            $("#current_key").val("");
+            editor.setValue("");
+        }
+        function view_docready(){    
+            
+            // called from the parent view's docready function.
+            modalLoading.init(true);
+            $("#serverinfo_div").hide();
+            $("#cli_div").hide();
+            $("#scan_cursor").text(last_scan_cursor);
+            
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
+        }   
+    </script>
+
+{% end %}

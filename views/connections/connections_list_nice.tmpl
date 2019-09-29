@@ -31,7 +31,11 @@
                         <div class="card-body">
                         <h5 class="card-title">
                             <img 
+                            {% if elem.type == "redis" %}
                                 src="{{static_url("images/redis_logo.png")}}" 
+                            {% elif elem.type == "tinydb" %}
+                                src="{{static_url("images/tinydb_logo.png")}}" 
+                            {% end %}
                                 class="card-img-top" alt="redis logo"
                                 style="width: 40%"
                             >
