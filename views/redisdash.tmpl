@@ -104,6 +104,7 @@
                         <form >                            
                             <div class="form-group">
                                 <label for="keyscan">scan(<span id="scan_cursor"></span>):</label>
+                                
                                 <button class="btn btn-sm btn-light" 
                                         id="inc_scan_cursor"
                                         data-toggle="tooltip" data-placement="top" title="get next page of keys">
@@ -113,10 +114,15 @@
                                         data-toggle="tooltip" data-placement="right" title="reset scan pattern and cursor">
                                     <i class="fas fa-times-circle"></i>
                                 </button>
+                                <select id="get_option">
+                                    <option selected>GET</option>
+                                    <option >HGETALL</option>
+                                </select>
+                                </div>
                                 <input type="text" class="form-control" 
                                     autocomplete="off"
                                     id="keyscan" placeholder="key1:key2:*">
-                            </div>
+                            
                         </form>
                     </div>
                     <div class="row" >
@@ -144,6 +150,12 @@
                             </div>
                             <div class="p-2">
                                 <button class="btn btn-success" id="btn_create"><i class="fas fa-plus-square mr-1"></i>create</button>
+                            </div>
+                            <div class="p-2">
+                                    <select class="form-control">
+                                        <option id="set" selected>SET</option>
+                                        <option id="hmset">HMSET</option>
+                                    </select>
                             </div>
                             <div class="p-2 flex-grow-1">
                                 <div class="alert alert-light" id="feedback" role="alert"></div>
@@ -190,11 +202,17 @@
                 <div class="input-group">                        
                     <input type="text" class="form-control" 
                                 autocomplete="off"
-                                id="cli" placeholder="$: (cli for onliners ;)">
+                                id="input_cli" placeholder="$: (cli for onliners ;)">
                     <span class="input-group-btn">
-                            <button class="btn btn-danger" id="fire-cli"><i class="fas fa-chevron-right"></i></button>
+                            <button class="btn btn-danger" id="fire_cli"><i class="fas fa-chevron-right"></i></button>
                     </span>
                 </div>
+                <div class="" style="width: 100%; overflow-y: auto !important;
+                            overflow-x: auto !important; max-height: 850px">
+                    <pre>
+                        <code id="feedback_cli"> </code>
+                    </pre>
+            </div>
             </div>
         </div>
     </div>
@@ -288,6 +306,12 @@
                     //$("#scanres").text(JSON.stringify(data["data"], null, 2))
                     //editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);
                     $("#feedback").text(JSON.stringify(data["data"], null, 2));
+                    break;
+                case "cli":
+                    // display the message in the #feedback alert box
+                    //$("#scanres").text(JSON.stringify(data["data"], null, 2))
+                    //editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);
+                    $("#feedback_cli").text(JSON.stringify(data["data"], null, '\t'),-1)
                     break;
                 
                 case "create":
@@ -386,6 +410,7 @@
             send_msg(method="update", data={"value": editor.getValue(), "key" : key });
 
         });
+        
         $("#inc_scan_cursor").click(function(){
             // update the value of the current_key
             $("#feedback").removeClass();
@@ -447,6 +472,15 @@
             $("#serverinfo_div").hide();
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
 
+        });
+
+        $("#fire_cli").click(function(){
+            // fire the cli command
+            
+            var clival = $("#input_cli").val();
+            console.log("fireing cli: " + clival);
+            send_msg(method="cli", data=clival);
+            
         });
 
         

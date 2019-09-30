@@ -116,6 +116,23 @@ class EchoWebSocket(PowWsHandler):
             }
         return json.dumps(data)
     
+    def cli(self, message):
+        """ 
+            scan db keys and return the result 
+        """
+        try:
+            r=self.get_client(message["client_id"])
+            print(f"executing: ... {message['data']} ")
+            result=r.db.execute_command( message["data"] )
+        except Exception as e:
+            result=str(e)
+        data = {
+                "method"    :   "cli",
+                "type"      :   "cli",
+                "data"      :   result
+            }
+        return json.dumps(data)
+    
     def disconnect(self, message):
         """ 
             remove the connection for this
