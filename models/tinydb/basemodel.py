@@ -205,9 +205,6 @@ class TinyBaseModel(ModelObject):
                 self._uuid = self.id
                 self.eid = self.table.insert(self.to_dict())         
                 print("insert, new eid: " +str(self.eid))    
-        # clean dirty marks
-        self.dirty = {}
-        self.is_dirty = False
         if self.observers_initialized:
             for observer in self.observers:
                 try:
