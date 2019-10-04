@@ -13,7 +13,7 @@ class Connections(TinyModel):
     #
     schema = {
         "type"      :   { "type" : "string", "allowed" : ["redis", "tinydb"], "default" : "redis"},
-        'dbname'    :   { 'type' : 'string', "default" : "" },
+        'dbname'    :   { 'type' : 'string' },
         'host'      :   { 'type' : 'string', "default" : "localhost" },
         'port'      :   { 'type' : 'integer', "default" : 6379 },
         'user'      :   { 'type' : 'string'},

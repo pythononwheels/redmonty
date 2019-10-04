@@ -76,10 +76,13 @@ class EchoWebSocket(PowWsHandler):
                 client_id = message["client_id"]
                 if not client_id in self.redisclients:
                     self.redisclients[client_id] = r
+                info=r.db.info()
+                info["hostname"] = redis_conf.host
+                info["dbname"] = redis_conf.dbname
                 data = {
                     "method"    :   "welcome",
                     "type"      :   "info",
-                    "data"      :   r.db.info()
+                    "data"      :   info
                 }
             except Exception as e:
                 print(str(e))

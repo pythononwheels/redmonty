@@ -31,7 +31,9 @@ class IndexdHandler(PowHandler):
         conn = self.get_secure_cookie("redisui:current_connection", None)
         print(f"found existing connnection cookie: {str(conn)}")
         if conn:
-            self.render("redisdash.tmpl", connected=True, connection_id=conn)
+            c=Connections()
+            redis_conf=c.find(c.where("_uuid") == id)
+            self.render("redisdash.tmpl", connected=True, connection_id=conn, connection=redis_conf)
         else:
             #self.set_secure_cookie("current_connection", "None")
             self.redirect("/connections_list")

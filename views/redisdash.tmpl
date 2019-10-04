@@ -36,23 +36,12 @@
     <div class="" id="dbmanager_div">
         <div class="container">
             <div class="card-deck">
-                
                 <!--div class="col-lg-4"-->
                         <div class="card text-white bg-dark mb-3" >
                             <div class="card-header">Connected to </div>
                             <div class="card-body">
-                                <h7 class="card-title" id="host"></h7>
-                                <h7 class="card-title" id="db"></h7>
-                                <div class="form-group">
-                                        <h5><label for="exampleFormControlSelect1">DB:</label></h5>
-                                        <select class="form-control" id="exampleFormControlSelect1" disabled>
-                                            <option selected>0</option>
-                                            {% for x in range(1,17)  %}
-                                                <option>{{x}}</option>
-                                            {% end %}}
-                                        </select>
-                                    </div>
-                                <p class="card-text">&nbsp;</p>
+                                <h6>Host: <small class="text-muted" id="hostname"></small></h6>
+                                <p >DB: <span id="dbname"></span></p>
                             </div>
                         </div>
                 <!--/div-->
@@ -60,12 +49,12 @@
                         <div class="card text-white bg-dark mb-3" >
                             <div class="card-header">Clients</div>
                             <div class="card-body">
-                                <h5 class="card-title" id="clients_info"></h5>
-                                <button class="btn btn-danger" id="disconnect">
+                                <span class="card-title" id="clients_info"></span>
+                                <button class="btn btn-sm btn-danger" id="disconnect">
                                     <i class="fas fa-unlink"></i>
                                     disconnect
                                 </button>
-                                <p class="card-text">&nbsp;</p>
+                                
                             </div>
                         </div>
                 <!--/div-->
@@ -82,14 +71,14 @@
                                             <h7 class="card-title">Redis Mode:</h7>
                                             <span id="redis_mode"></span>
                                         </li>
-                                    <li>
+                                    <!--li>
                                         <h7 class="card-title">CPU (sys):</h7>
                                         <span id="server_info_cpu_sys"></span>
                                     </li>
                                     <li>
                                         <h7 class="card-title">MEM:</h7>
                                         <span id="server_info_mem"></span>
-                                    </li>
+                                    </li-->
                                 </ul>
                             </div>
                         </div>
@@ -147,15 +136,15 @@
                     </div>
                     <div class="d-flex flex-row bg-light" style="margin-top: 20px;">
                             <div class="p-2">
-                                <button class="btn btn-info" id="update"><i class="fas fa-edit mr-1"></i>update</button>
+                                <button class="btn btn-info" id="btn_update"><i class="fas fa-edit mr-1"></i>update</button>
                             </div>
                             <div class="p-2">
                                 <button class="btn btn-success" id="btn_create"><i class="fas fa-plus-square mr-1"></i>create</button>
                             </div>
                             <div class="p-2">
-                                    <select class="form-control">
-                                        <option id="set" selected>SET</option>
-                                        <option id="hmset">HMSET</option>
+                                    <select class="form-control" id="set_option">
+                                        <option selected>SET</option>
+                                        <option>HMSET</option>
                                     </select>
                             </div>
                             <div class="p-2 flex-grow-1">
@@ -169,20 +158,6 @@
             </div>
         </div>
     </div>
-        <!--div class="container mt-1">
-            
-            <div class="row" style="margin-left: 5px">
-                <div class="col-lg-12">
-                    
-                    <pre style="max-height: 200px;"> <code id="scanres">
-                            &nbsp; 
-                        </code>
-                    </pre>
-                    
-                </div>
-            </div>
-        </div-->
-
     <div class="container mt-1" id="serverinfo_div">
         <div class="row" style="margin-left: 5px">
             <h3 class="mt-3">Server Info(raw):</h3>
@@ -194,8 +169,6 @@
             </div>
         </div>
     </div>
-        
-
     <div class="container" id="cli_div">
         <div class="row" style="margin-top: 20px;">
             <div class="col-lg-8">
@@ -247,6 +220,7 @@
         var editor = ace.edit("reditor");
         var serverinfo_data;
         var last_scan_cursor = 0;
+        
         //editor.setTheme("ace/theme/dracula");
         editor.setTheme("ace/theme/github");
         editor.session.setMode("ace/mode/json");
@@ -284,6 +258,8 @@
                     console.log("ok: info");
                     modalLoading.init(false);
                     console.log(JSON.stringify(data["data"], null, 2));
+                    $("#hostname").text(data["data"]["hostname"]);
+                    $("#dbname").text(data["data"]["dbname"]);
                     $("#result").text(JSON.stringify(data["data"], null, 2));
                     $("#result").show();
                     $("#redis_version").text(data["data"]["redis_version"]);
@@ -427,16 +403,6 @@
             send_msg(method="disconnect", data=current_connection);
         });
         
-        $("#update").click(function(){
-            // update the value of the current_key
-            $("#feedback").removeClass();
-            $("#feedback").addClass("alert alert-info");
-            var key=$("#current_key").text();
-            $("#feedback").text("Updating key: " + key);
-            send_msg(method="update", data={"value": editor.getValue(), "key" : key });
-
-        });
-        
         $("#inc_scan_cursor").click(function(){
             // update the value of the current_key
             $("#feedback").removeClass();
@@ -465,7 +431,7 @@
         });
 
         $("#link_serverinfo").click(function(e){
-            // update the value of the current_key
+            // show the server info of redis
             e.preventDefault();
             console.log("serverinfo link: " + e)
             var key=$("#current_key").text();
@@ -473,11 +439,10 @@
             $("#dbmanager_div").hide();
             $("#serverinfo_div").show();
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
-
         });
         
         $("#link_redisdb").click(function(e){
-            // update the value of the current_key
+            // show the redis dash
             e.preventDefault();
             console.log("redisdb link: " + e)
             var key=$("#current_key").text();
@@ -485,11 +450,10 @@
             $("#dbmanager_div").show();
             $("#serverinfo_div").hide();
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
-
         });
 
         $("#link_cli").click(function(e){
-            // update the value of the current_key
+            // show the cli div
             e.preventDefault();
             console.log("cli link: " + e)
             var key=$("#current_key").text();
@@ -497,28 +461,35 @@
             $("#dbmanager_div").hide();
             $("#serverinfo_div").hide();
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
-
         });
 
         $("#fire_cli").click(function(){
             // fire the cli command
-            
             var clival = $("#input_cli").val();
             console.log("fireing cli: " + clival);
             send_msg(method="cli", data=clival);
-            
         });
 
-        
-        $("#btn_create").click(function(){
+        $("#btn_update").click(function(){
             // update the value of the current_key
+            $("#feedback").removeClass();
+            $("#feedback").addClass("alert alert-info");
+            var key=$("#current_key").text();
+            $("#feedback").text("Updating key: " + key);
+            send_msg(method="update", data={"value": editor.getValue(), "key" : key });
+
+        });
+
+        $("#btn_create").click(function(){
+            // create a new value using the given key
+            // be careful. At this point this might override any exsting key...
+            // without asking.
             $("#feedback").removeClass();
             $("#feedback").addClass("alert alert-info");
             var key=$("#current_key_input").val()
             $("#feedback").text("Updating key: " + key);
             console.log("Create: " + key + " value: " + editor.getValue());
             send_msg(method="create", data={"value": editor.getValue(), "key" : key });
-
         });
 
         $("#btn_delete").click(function(){
@@ -528,7 +499,6 @@
             var key=$("#current_key").text();
             $("#feedback").text("deleting key: " + key);
             send_msg(method="delete", data={"value": editor.getValue(), "key" : key });
-
         });
 
 
