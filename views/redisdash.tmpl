@@ -192,7 +192,6 @@
                         <code id="serverinfo_code"> </code>
                     </pre>
             </div>
-                
         </div>
     </div>
         
@@ -307,6 +306,13 @@
                     $("#current_key_input").val(key);
                     editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);          
                     break;
+                case "hgetall":
+                    // display the value in the editor
+                    $("#scanres").text(JSON.stringify(data["data"], null, 2))
+                    var key=$("#current_key").text();
+                    $("#current_key_input").val(key);
+                    editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);         
+                    break;
                 case "disconnect":
                     // display the message in the #feedback alert box
                     console.log("redirecting to: " + JSON.stringify(data["data"]));
@@ -325,7 +331,6 @@
                     //editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);
                     $("#feedback_cli").text(JSON.stringify(data["data"], null, '\t'),-1)
                     break;
-                
                 case "create":
                     /// display the message in the #feedback alert box
                     //$("#scanres").text(JSON.stringify(data["data"], null, 2))
@@ -383,9 +388,18 @@
         
         
         function getval(id){
-            console.log("getval: " + id);
-            $("#current_key").text(id);
-            send_msg(method="getval", data=id);
+            // gets or hget all the value of the clicked key
+            console.log("#get_option is: " + $("#get_option").val().toLowerCase() );
+            if ($("#get_option").val().toLowerCase()=="hgetall"){
+                console.log("hgetall: " + id);
+                $("#current_key").text(id);
+                send_msg(method="hgetall", data=id);
+            } else {
+                // use get as the default. (in any other case)
+                console.log("getval: " + id);
+                $("#current_key").text(id);
+                send_msg(method="getval", data=id);
+            } 
         }
 
         function send_msg(method="NONE", data=null){

@@ -155,7 +155,8 @@ class EchoWebSocket(PowWsHandler):
 
     def getval(self, message):
         """ 
-            scan db keys and return the result 
+            get the value for the given key 
+            message['data'] is the key
         """
         r=self.get_client(message["client_id"])
         result=r.db.get(message["data"])
@@ -172,6 +173,22 @@ class EchoWebSocket(PowWsHandler):
             }
         return json.dumps(data)
     
+    def hgetall(self, message):
+        """ 
+            hgetall the value(s) for the given hash key
+            message['data'] is the key
+        """
+        r=self.get_client(message["client_id"])
+        result=r.db.hgetall(message["data"])
+        print(f"hgetall: ...: {message['data']} : {str(result)}")
+        print(type(result))
+        data = {
+                "method"    :   "hgetall",
+                "type"      :   "hgetall",
+                "data"      :   result
+            }
+        return json.dumps(data)
+
     def delete(self, message):
         """ 
             delete the key and value from the db
