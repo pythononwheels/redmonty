@@ -174,7 +174,7 @@
             <div class="col-lg-8">
                 <div class="input-group">                        
                     <input type="text" class="form-control" 
-                                id="input_cli" placeholder="$: (cli for onliners ;)">
+                                id="input_cli" placeholder="$: (cli for on(e)liners ;)">
                     <span class="input-group-btn">
                             <button class="btn btn-danger" id="fire_cli"><i class="fas fa-chevron-right"></i></button>
                     </span>
@@ -387,9 +387,11 @@
             }
             ws.send(JSON.stringify(data));            
         }
-
+        
+        
         $( "#keyscan" ).keypress(function(event) {
             //console.log( "key:" + String.fromCharCode(event.which) );
+            // https://stackoverflow.com/questions/12955222/how-to-trigger-html-button-when-you-press-enter-in-textbox
             console.log($("#keyscan").val())
             send_msg(method="scan", data={
                 "cursor": 0,
@@ -397,7 +399,7 @@
                 }
             );
         });
-
+        
         $("#disconnect").click(function(){
             console.log("disconecting...from: {{connection_id}}");
             send_msg(method="disconnect", data=current_connection);
@@ -462,6 +464,15 @@
             $("#serverinfo_div").hide();
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
         });
+
+       $("#input_cli").keyup(function(event){
+            console.log("cli:" + event.key);
+            if (event.key == "Enter"){
+                // fire the command
+                $("#fire_cli").click();
+                event.preventDefault();
+            }
+       });
 
         $("#fire_cli").click(function(){
             // fire the cli command

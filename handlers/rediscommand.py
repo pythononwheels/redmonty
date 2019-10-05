@@ -39,7 +39,7 @@ class Rediscommand(PowHandler):
     model=Model()
     
     # these fields will be hidden by scaffolded views:
-    hide_list=["id", "created_at", "last_updated"]
+    hide_list=["id", "created_at", "last_updated", "help_text"]
 
     def show(self, id=None):
         m=Model()

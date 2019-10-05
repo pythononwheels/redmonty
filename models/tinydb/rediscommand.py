@@ -17,6 +17,7 @@ class Rediscommand(TinyModel):
         'summary'   :   { 'type' : 'string' },
         "args"      :   { "type" : "list", "default" : []},
         'help_link' :   { 'type' : 'string' },
+        "help_text" :   { "type" : "string" }
         }
 
     

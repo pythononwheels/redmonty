@@ -21,11 +21,25 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-import sys
-from redmonty.models.tinydb.rediscommand import Rediscommand 
-import datetime
+from models.tinydb.rediscommand import Rediscommand 
 
-r = requests.get("https://redis.io/commands")
+BASE_URL = "https://redis.io/commands"
+
+def get_command_help(url):
+    """
+        get the detailed command help from the deep link
+        info is in <div class="article-main">
+    """
+    url = "https://redis.io" + url
+    r = requests.get(url)
+    print(f"opening: {url}")
+    soup = BeautifulSoup(r.text, 'html.parser')
+    content = soup.find("div", attrs={'class': "article-main"})
+    return str(content)
+
+
+
+r = requests.get(BASE_URL)
 soup = BeautifulSoup(r.text, 'html.parser')
 #print(soup)
 regex = re.compile('.*')
@@ -40,6 +54,7 @@ for x,li in enumerate(content_lis):
     command_args = command_args_span.find(text=True, recursive=False)
     command_args_list =  [str.strip(x) for x in command_args.split("\n")]
     command_args_list.pop(0)    # remove the first blank.
+    del command_args_list[-1]   # remove the last blank
     command_summary_span = li.findChild("span", attrs={"class" : "summary"})
     command_summary = command_summary_span.find(text=True, recursive=False)
     command_category = li.attrs["data-group"]
@@ -54,11 +69,12 @@ for x,li in enumerate(content_lis):
     try:
         
         all_commands[command_txt] = {
-            "category"  : command_category,
-            "help_link" : command_link,
+            "category"  : str(command_category),
+            "help_link" : str(command_link),
             "args"      : command_args_list,
-            "summary"   : command_summary,
-            "name"      : command_txt
+            "summary"   : str(command_summary),
+            "name"      : str(command_txt),
+            "help_text" : get_command_help(str(command_link))
         }
 
     except Exception as e:
@@ -71,8 +87,11 @@ for elem in all_commands:
     r = Rediscommand()
     r.init_from_dict(all_commands[elem])
     print(r)
+    #what = input("upsert or skip ... (u|s)")
+    #if what == "u":
+    #    r.upsert()
+    #else:
+    #    pass
     r.upsert()
-    sys.exit()
-
 
 
