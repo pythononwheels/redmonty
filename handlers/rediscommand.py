@@ -2,10 +2,11 @@
 from redmonty.handlers.powhandler import PowHandler
 from redmonty.models.tinydb.rediscommand import Rediscommand as Model
 from redmonty.config import myapp, database
-from redmonty.application import app
+from redmonty.application import app, route
 import simplejson as json
 import tornado.web
 
+@app.make_routes()
 @app.add_rest_routes("rediscommand")
 class Rediscommand(PowHandler):
     """
@@ -45,7 +46,15 @@ class Rediscommand(PowHandler):
         m=Model()
         res=m.find_by_id(id)
         self.success(message="rediscommand show", data=res)
-        
+    
+    @route("/getcommands", dispatch=["GET"])
+    def getcommands(self):
+        m=Model()
+        res = m.get_all()  
+        #for elem in res:
+        #    del elem["help_text"]
+        self.success(message="rediscommand, send commands", format="json", data=res)  
+
     def list(self):
         m=Model()
         res = m.get_all()  

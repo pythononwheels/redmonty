@@ -3,7 +3,8 @@
 {% block include_css %}
     <!--link href="{{static_url("css/prism.css")}}" rel="stylesheet" /-->
     <link href="{{static_url("css/highlight-styles/hopscotch.css")}}" rel="stylesheet" /-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.0.2/dist/css/autoComplete.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
+    
 {% end %}
 
 {% block view_css %}
@@ -174,7 +175,7 @@
             <div class="col-lg-8">
                 <div class="input-group">                        
                     <input type="text" class="form-control" 
-                                id="input_cli" placeholder="$: (cli for on(e)liners ;)">
+                                id="input_cli" tabindex="1">
                     <span class="input-group-btn">
                             <button class="btn btn-danger" id="fire_cli"><i class="fas fa-chevron-right"></i></button>
                     </span>
@@ -209,7 +210,8 @@
     <!--script src="{{static_url("js/prism.js")}}"></script-->
     <script src="{{static_url("js/highlight.pack.js")}}"></script>
     <script src="{{static_url("js/modalloading.js")}}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.0.2/dist/js/autoComplete.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+    
 {% end %}
 
 {% block view_js %}
@@ -464,16 +466,16 @@
             $("#serverinfo_div").hide();
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
         });
-
-       $("#input_cli").keyup(function(event){
+        
+        $("#input_cli").keyup(function(event){
             console.log("cli:" + event.key);
             if (event.key == "Enter"){
                 // fire the command
                 $("#fire_cli").click();
                 event.preventDefault();
             }
-       });
-
+        });
+ 
         $("#fire_cli").click(function(){
             // fire the cli command
             var clival = $("#input_cli").val();
@@ -533,65 +535,7 @@
             })
         }   
 
-        new autoComplete({
-            data: {                              // Data src [Array, Function, Async] | (REQUIRED)
-            src: async () => {
-                
-                const query = document.querySelector("#input_cli").value;
-                // Fetch External Data Source
-                const source = await fetch(`/rediscommands/list`);
-                // Format data into JSON
-                const data = await source.json();
-                // Return Fetched data
-                return data.recipes;
-            },
-            key: ["title"],
-            cache: false
-            },
-            query: {                               // Query Interceptor               | (Optional)
-                manipulate: (query) => {
-                    return query.replace("pizza", "burger");
-                }
-            },
-            sort: (a, b) => {                    // Sort rendered results ascendingly | (Optional)
-                if (a.match < b.match) return -1;
-                if (a.match > b.match) return 1;
-                return 0;
-            },
-            placeHolder: "Food & Drinks...",     // Place Holder text                 | (Optional)
-            selector: "#autoComplete",           // Input field selector              | (Optional)
-            threshold: 3,                        // Min. Chars length to start Engine | (Optional)
-            debounce: 300,                       // Post duration for engine to start | (Optional)
-            searchEngine: "strict",              // Search Engine type/mode           | (Optional)
-            resultsList: {                       // Rendered results list object      | (Optional)
-                render: true,
-                container: source => {
-                    const resultsListID = "food_List";
-                    return resultsListID;
-                },
-                destination: document.querySelector("#autoComplete"),
-                position: "afterend",
-                element: "ul"
-            },
-            maxResults: 5,                         // Max. number of rendered results | (Optional)
-            highlight: true,                       // Highlight matching results      | (Optional)
-            resultItem: {                          // Rendered result item            | (Optional)
-                content: (data, source) => {
-                    source.innerHTML = data.match;
-                },
-                element: "li"
-            },
-            noResults: () => {                     // Action script on noResults      | (Optional)
-                const result = document.createElement("li");
-                result.setAttribute("class", "no_result");
-                result.setAttribute("tabindex", "1");
-                result.innerHTML = "No Results";
-                document.querySelector("#autoComplete_results_list").appendChild(result);
-            },
-            onSelection: feedback => {             // Action script onSelection event | (Optional)
-                console.log(feedback.selection.value.image_url);
-            }
-        });
+       
     </script>
 
 {% end %}
