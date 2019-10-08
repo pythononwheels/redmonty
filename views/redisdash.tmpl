@@ -2,8 +2,9 @@
 
 {% block include_css %}
     <!--link href="{{static_url("css/prism.css")}}" rel="stylesheet" /-->
-    <link href="{{static_url("css/highlight-styles/hopscotch.css")}}" rel="stylesheet" /-->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
+    <link href="{{static_url("css/highlight-styles/hopscotch.css")}}" rel="stylesheet" />
+    <link href="{{static_url("css/awesomplete.css")}}" rel="stylesheet" />
+    <!--link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" /--> 
     
 {% end %}
 
@@ -29,6 +30,9 @@
         position:absolute;
         bottom:0;
         }
+    .awesomplete {
+        width: 90%;
+    }
     </style>
 
 {% end %}
@@ -170,12 +174,18 @@
             </div>
         </div>
     </div>
+    <!-- 
+        ***********
+        the cli 
+        ***********
+    -->
     <div class="container" id="cli_div">
         <div class="row" style="margin-top: 20px;">
             <div class="col-lg-8">
-                <div class="input-group">                        
-                    <input type="text" class="form-control" 
-                                id="input_cli" tabindex="1">
+                <div class="input-group">  
+                                    
+                    <input type="text" class="form-control" name="input_cli" id="input_cli">
+                
                     <span class="input-group-btn">
                             <button class="btn btn-danger" id="fire_cli"><i class="fas fa-chevron-right"></i></button>
                     </span>
@@ -201,17 +211,15 @@
         </div>
     </div>
 
-    
-
 {% end %}
 
 {% block include_js %}
     <script src="https://pagecdn.io/lib/ace/1.4.5/ace.js" integrity="sha256-5Xkhn3k/1rbXB+Q/DX/2RuAtaB4dRRyQvMs83prFjpM=" crossorigin="anonymous"></script>
     <!--script src="{{static_url("js/prism.js")}}"></script-->
     <script src="{{static_url("js/highlight.pack.js")}}"></script>
-    <script src="{{static_url("js/modalloading.js")}}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
-    
+    <script src="{{static_url("js/modalloading.js")}}"></script>    
+    <script src="{{static_url("js/awesomplete.js")}}"></script>
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script-->
 {% end %}
 
 {% block view_js %}
@@ -222,7 +230,9 @@
         var editor = ace.edit("reditor");
         var serverinfo_data;
         var last_scan_cursor = 0;
-        
+        var commands_full = [];
+        var commands = [];
+        var awesomplete;
         //editor.setTheme("ace/theme/dracula");
         editor.setTheme("ace/theme/github");
         editor.session.setMode("ace/mode/json");
@@ -360,10 +370,7 @@
                 default:
                     console.log("unhandled message type: " + data["type"] + " ...Should not happen!")
             }
-
-
         };
-        
         
         function getval(id){
             // gets or hget all the value of the clicked key
@@ -455,18 +462,55 @@
             $("#serverinfo_div").hide();
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
         });
-
+        document.querySelector('#input_cli').addEventListener("focusout", onInput);
+        function onInput(e) {
+            var val = document.querySelector('#input_cli').value;
+            options = document.getElementById('commands').childNodes;
+            /*for(var i = 0; i < options.length; i++) {
+                if(options[i].innerText === val) {
+                    console.log("i found: " + val);
+                    break;
+                }
+            }*/
+            console.log(val);
+        }
         $("#link_cli").click(function(e){
             // show the cli div
             e.preventDefault();
             console.log("cli link: " + e)
+            // get the command help
             var key=$("#current_key").text();
             $("#cli_div").show();
             $("#dbmanager_div").hide();
             $("#serverinfo_div").hide();
+            
+            $.getJSON( "/getcommands", function( data ) {
+                var items = [];
+                commands_full = data["data"];
+                $.each( data["data"], function( key, val ) {
+                    // data is a list
+                    // key is the current item number ++ for each item in data
+                    // val is the  i(th) data
+                    commands.push(val["name"]);
+                    //$("#commands").append('<option value="' + val["_uuid"] + '">' + val["name"] + '</option>');
+                });
+                //console.log(commands);
+            });
+            var input = document.getElementById("input_cli");
+            awesomplete = new Awesomplete(input,
+                {
+                    minChars: 1,
+                    maxItems: 5
+                }
+            );
+            $("#input_cli").on('awesomplete-selectcomplete',function(){
+                console.log("awesomleted. " + this.value);
+            });
+            awesomplete.list = commands;
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
+            
         });
-        
+        /*
         $("#input_cli").keyup(function(event){
             console.log("cli:" + event.key);
             if (event.key == "Enter"){
@@ -475,7 +519,7 @@
                 event.preventDefault();
             }
         });
- 
+        */
         $("#fire_cli").click(function(){
             // fire the cli command
             var clival = $("#input_cli").val();
@@ -490,7 +534,6 @@
             var key=$("#current_key").text();
             $("#feedback").text("Updating key: " + key);
             send_msg(method="update", data={"value": editor.getValue(), "key" : key });
-
         });
 
         $("#btn_create").click(function(){
@@ -514,7 +557,6 @@
             send_msg(method="delete", data={"value": editor.getValue(), "key" : key });
         });
 
-
         hljs.initHighlightingOnLoad();
         function clear_all(){
             $("#keyscan").val("");
@@ -523,7 +565,6 @@
             editor.setValue("");
         }
         function view_docready(){    
-            
             // called from the parent view's docready function.
             modalLoading.init(true);
             $("#serverinfo_div").hide();
@@ -532,10 +573,8 @@
             
             $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
-            })
+            });
         }   
-
-       
     </script>
 
 {% end %}
