@@ -31,8 +31,13 @@
         bottom:0;
         }
     .awesomplete {
-        width: 90%;
+        width: 93%;
     }
+    .tooltip-inner {
+        min-width: 100px;
+        max-width: 100%; 
+    }
+    
     </style>
 
 {% end %}
@@ -181,7 +186,7 @@
     -->
     <div class="container" id="cli_div">
         <div class="row" style="margin-top: 20px;">
-            <div class="col-lg-8">
+            <div class="col-lg-7">
                 <div class="input-group">  
                                     
                     <input type="text" class="form-control" name="input_cli" id="input_cli"
@@ -199,8 +204,8 @@
                     </pre>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <div class="card" id="help_card" style="width: 18rem;">
+            <div class="col-lg-5">
+                <div class="card" id="help_card" style="width: 100%;">
                     <div class="card-body">
                         <h5 class="card-title" id="help_card_title">Card title</h5>
                         <h6 class="card-subtitle mb-2 text-muted" id="help_card_subtitle">Card subtitle</h6>
@@ -400,7 +405,7 @@
         }
         
         
-        $( "#keyscan" ).keypress(function(event) {
+        $("#keyscan").keypress(function(event) {
             //console.log( "key:" + String.fromCharCode(event.which) );
             // https://stackoverflow.com/questions/12955222/how-to-trigger-html-button-when-you-press-enter-in-textbox
             console.log($("#keyscan").val())
@@ -448,9 +453,13 @@
             e.preventDefault();
             console.log("serverinfo link: " + e)
             var key=$("#current_key").text();
+            // prepare the UI
             $("#cli_div").hide();
             $("#dbmanager_div").hide();
             $("#serverinfo_div").show();
+            $("#link_redisdb").removeClass("active");
+            $("#link_cli").removeClass("active");
+            $("#link_serverinfo").addClass("active");
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
         });
         
@@ -459,9 +468,13 @@
             e.preventDefault();
             console.log("redisdb link: " + e)
             var key=$("#current_key").text();
+            // prepare the UI
             $("#cli_div").hide();
             $("#dbmanager_div").show();
             $("#serverinfo_div").hide();
+            $("#link_cli").removeClass("active");
+            $("#link_serverinfo").removeClass("active");
+            $("#link_redisdb").addClass("active");
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
         });
         /*
@@ -478,9 +491,14 @@
             console.log("cli link: " + e)
             
             var key=$("#current_key").text();
+            // prepare the UI
             $("#cli_div").show();
             $("#dbmanager_div").hide();
             $("#serverinfo_div").hide();
+            $("#link_redisdb").removeClass("active");
+            $("#link_serverinfo").removeClass("active");
+            $("#link_cli").addClass("active");
+
             // get the list of commands as json from the server
             $.getJSON( "/getcommands", function( data ) {
                 var items = [];
@@ -518,6 +536,10 @@
                 elt.tooltip('update');
                 elt.tooltip('show');
                 
+                $('input[rel="txtTooltip"]').tooltip({
+                    container: 'body'
+                });
+
                 console.log("Current command: " + current_command["name"] + " " + current_command["args"]);
                 console.log("awesomleted. " + this.value);
             });
