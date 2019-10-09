@@ -38,6 +38,10 @@
         max-width: 100%; 
     }
     
+    .scroll_card {
+        max-height: 650px;
+        overflow-y: auto;
+    }
     </style>
 
 {% end %}
@@ -168,11 +172,19 @@
             </div>
         </div>
     </div>
+     <!-- 
+        ***********
+        the server_info
+        ***********
+    -->
     <div class="container mt-1" id="serverinfo_div">
         <div class="row" style="margin-left: 5px">
-            <h3 class="mt-3">Server Info(raw):</h3>
+            <div>
+                <h3 class="mt-3">Server Info(raw):</h3>
+                <p class="lead" id="serverinfo_hostname"></p>
+            </div>
             <div class="" style="width: 100%; overflow-y: auto !important;
-            overflow-x: auto !important; max-height: 850px">
+            overflow-x: auto !important; max-height: 550px">
                     <pre>
                         <code id="serverinfo_code"> </code>
                     </pre>
@@ -190,8 +202,7 @@
                 <div class="input-group">  
                                     
                     <input type="text" class="form-control" name="input_cli" id="input_cli"
-                        data-toggle="tooltip" data-placement="top" title="Short command help will be displayed here..."
-                    >
+                        data-toggle="tooltip" data-placement="top">
                 
                     <span class="input-group-btn">
                             <button class="btn btn-danger" id="fire_cli"><i class="fas fa-chevron-right"></i></button>
@@ -205,12 +216,13 @@
                 </div>
             </div>
             <div class="col-lg-5">
-                <div class="card" id="help_card" style="width: 100%;">
+                <div class="card scroll_card" id="help_card" style="width: 100%;">
                     <div class="card-body">
                         <h5 class="card-title" id="help_card_title">Card title</h5>
                         <h6 class="card-subtitle mb-2 text-muted" id="help_card_subtitle">Card subtitle</h6>
                         <p class="card-text" id="help_card_text">Command help text short.</p>
-                        <a href="https://redis.io/commands" class="card-link" id="help_card_details">Details</a>
+                        <p class="card-text" id="help_card_details">Command help text short.</p>
+                        <a href="https://redis.io/commands" class="card-link" id="help_card_link">Details</a>
                         
                     </div>
                 </div>
@@ -275,6 +287,9 @@
                 case "info":
                     // update the info boxes (cards)
                     console.log("ok: info");
+                    serverinfo_data = data["data"];
+                    serverinfo_data["hostname"] = data["data"]["hostname"];
+                    serverinfo_data["dbname"] = data["data"]["dbname"];
                     modalLoading.init(false);
                     console.log(JSON.stringify(data["data"], null, 2));
                     $("#hostname").text(data["data"]["hostname"]);
@@ -451,7 +466,7 @@
         $("#link_serverinfo").click(function(e){
             // show the server info of redis
             e.preventDefault();
-            console.log("serverinfo link: " + e)
+            console.log("serverinfo link: " + e);
             var key=$("#current_key").text();
             // prepare the UI
             $("#cli_div").hide();
@@ -461,6 +476,7 @@
             $("#link_cli").removeClass("active");
             $("#link_serverinfo").addClass("active");
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
+            $("#serverinfo_hostname").text(serverinfo_data["hostname"] + ":db(" + serverinfo_data["dbname"] + ")");
         });
         
         $("#link_redisdb").click(function(e){
@@ -498,7 +514,7 @@
             $("#link_redisdb").removeClass("active");
             $("#link_serverinfo").removeClass("active");
             $("#link_cli").addClass("active");
-
+            //$("#feedback_cli").html("");
             // get the list of commands as json from the server
             $.getJSON( "/getcommands", function( data ) {
                 var items = [];
@@ -523,22 +539,32 @@
             // set the seclectcomplete function.
             //
             $("#input_cli").on('awesomplete-selectcomplete',function(){
-                // Mapping help_card => rediscommand model attributes
-                // card_title, => command (category)
-                // subtitle, => args
-                // text, => summary
-                // details => help_text
+                // map the cuurent command to the commands_full array
                 var current_command = commands_full.find(x => x.name === this.value);
                 var title = current_command["name"] + " " + current_command["args"];
+                // update the tooltip
+                /*
                 var elt = $("#input_cli");
                 elt.attr('title', title);
                 elt.attr('data-original-title', title);
                 elt.tooltip('update');
                 elt.tooltip('show');
-                
+                */
+                /*
                 $('input[rel="txtTooltip"]').tooltip({
                     container: 'body'
                 });
+                */
+                // Mapping help_card => rediscommand model attributes
+                // card_title, => command (category)
+                // subtitle, => args
+                // text, => summary
+                // details => help_text
+                $("#help_card_title").text(current_command["name"]);
+                $("#help_card_subtitle").text(current_command["args"]);
+                $("#help_card_text").text(current_command["summary"]);
+                $("#help_card_details").html(current_command["help_text"]);
+
 
                 console.log("Current command: " + current_command["name"] + " " + current_command["args"]);
                 console.log("awesomleted. " + this.value);
