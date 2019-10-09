@@ -184,7 +184,9 @@
             <div class="col-lg-8">
                 <div class="input-group">  
                                     
-                    <input type="text" class="form-control" name="input_cli" id="input_cli">
+                    <input type="text" class="form-control" name="input_cli" id="input_cli"
+                        data-toggle="tooltip" data-placement="top" title="Short command help will be displayed here..."
+                    >
                 
                     <span class="input-group-btn">
                             <button class="btn btn-danger" id="fire_cli"><i class="fas fa-chevron-right"></i></button>
@@ -198,12 +200,12 @@
                 </div>
             </div>
             <div class="col-lg-4">
-                <div class="card" style="width: 18rem;">
+                <div class="card" id="help_card" style="width: 18rem;">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                        <a href="https://redis.io/commands" class="card-link">Details</a>
+                        <h5 class="card-title" id="help_card_title">Card title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted" id="help_card_subtitle">Card subtitle</h6>
+                        <p class="card-text" id="help_card_text">Command help text short.</p>
+                        <a href="https://redis.io/commands" class="card-link" id="help_card_details">Details</a>
                         
                     </div>
                 </div>
@@ -462,28 +464,24 @@
             $("#serverinfo_div").hide();
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
         });
+        /*
         document.querySelector('#input_cli').addEventListener("focusout", onInput);
         function onInput(e) {
             var val = document.querySelector('#input_cli').value;
             options = document.getElementById('commands').childNodes;
-            /*for(var i = 0; i < options.length; i++) {
-                if(options[i].innerText === val) {
-                    console.log("i found: " + val);
-                    break;
-                }
-            }*/
             console.log(val);
         }
+        */
         $("#link_cli").click(function(e){
             // show the cli div
             e.preventDefault();
             console.log("cli link: " + e)
-            // get the command help
+            
             var key=$("#current_key").text();
             $("#cli_div").show();
             $("#dbmanager_div").hide();
             $("#serverinfo_div").hide();
-            
+            // get the list of commands as json from the server
             $.getJSON( "/getcommands", function( data ) {
                 var items = [];
                 commands_full = data["data"];
@@ -503,7 +501,24 @@
                     maxItems: 5
                 }
             );
+            //
+            // set the seclectcomplete function.
+            //
             $("#input_cli").on('awesomplete-selectcomplete',function(){
+                // Mapping help_card => rediscommand model attributes
+                // card_title, => command (category)
+                // subtitle, => args
+                // text, => summary
+                // details => help_text
+                var current_command = commands_full.find(x => x.name === this.value);
+                var title = current_command["name"] + " " + current_command["args"];
+                var elt = $("#input_cli");
+                elt.attr('title', title);
+                elt.attr('data-original-title', title);
+                elt.tooltip('update');
+                elt.tooltip('show');
+                
+                console.log("Current command: " + current_command["name"] + " " + current_command["args"]);
                 console.log("awesomleted. " + this.value);
             });
             awesomplete.list = commands;
@@ -570,10 +585,11 @@
             $("#serverinfo_div").hide();
             $("#cli_div").hide();
             $("#scan_cursor").text(last_scan_cursor);
-            
+            /*
             $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
             });
+            */
         }   
     </script>
 
