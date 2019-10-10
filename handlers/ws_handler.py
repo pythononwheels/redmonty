@@ -131,12 +131,20 @@ class EchoWebSocket(PowWsHandler):
         except Exception as e:
             result=str(e)
             status = "error"
-        data = {
-                "method"    :   "cli",
-                "type"      :   "cli",
-                "status"    :   status,
-                "data"      :   result
-            }
+        try:
+            data = {
+                    "method"    :   "cli",
+                    "type"      :   "cli",
+                    "status"    :   status,
+                    "data"      :   json.loads(result)
+                }
+        except:
+            data = {
+                    "method"    :   "cli",
+                    "type"      :   "cli",
+                    "status"    :   status,
+                    "data"      :   result
+                }
         return json.dumps(data)
     
     def disconnect(self, message):

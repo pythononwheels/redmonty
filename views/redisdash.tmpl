@@ -31,7 +31,12 @@
         bottom:0;
         }
     .awesomplete {
-        width: 93%;
+        width: 100%;
+    }
+    .btn-cli {
+        margin-top: 3px;
+        margin-right: 3px;
+        margin-bottom: 3px;
     }
     .tooltip-inner {
         min-width: 100px;
@@ -200,13 +205,15 @@
         <div class="row" style="margin-top: 20px;">
             <div class="col-lg-7">
                 <div class="input-group">  
-                                    
                     <input type="text" class="form-control" name="input_cli" id="input_cli"
                         data-toggle="tooltip" data-placement="top">
-                
                     <span class="input-group-btn">
-                            <button class="btn btn-danger" id="fire_cli"><i class="fas fa-chevron-right"></i></button>
+                            <button class="btn btn-success btn-sm btn-cli" id="fire_cli"><i class="fas fa-chevron-right"></i></button>
                     </span>
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-sm btn-cli" id="help_cli"><i class="fas fa-question-circle"></i></button>
+                    </span>
+                    
                 </div>
                 <div class="" style="width: 100%; overflow-y: auto !important;
                             overflow-x: auto !important; max-height: 850px">
@@ -218,12 +225,12 @@
             <div class="col-lg-5">
                 <div class="card scroll_card" id="help_card" style="width: 100%;">
                     <div class="card-body">
-                        <h5 class="card-title" id="help_card_title">Card title</h5>
-                        <h6 class="card-subtitle mb-2 text-muted" id="help_card_subtitle">Card subtitle</h6>
-                        <p class="card-text" id="help_card_text">Command help text short.</p>
-                        <p class="card-text" id="help_card_details">Command help text short.</p>
-                        <a href="https://redis.io/commands" class="card-link" id="help_card_link">Details</a>
-                        
+                        <h5 class="card-title" id="help_card_title">Adapted Help</h5>
+                        <h6 class="card-subtitle mb-2 text-muted" id="help_card_subtitle">For Redis commands</h6>
+                        <p class="card-text" id="help_card_text">[Patterns], Sections</p>
+                        <p class="card-text" id="help_card_details"> And the full help text details with examples will be displayed here..</p>
+                        <a href="https://redis.io/commands" class="card-link" id="help_card_link">
+                           ..all commands</a>
                     </div>
                 </div>
             </div>
@@ -333,7 +340,8 @@
                     // display the message in the #feedback alert box
                     //$("#scanres").text(JSON.stringify(data["data"], null, 2))
                     //editor.setValue(JSON.stringify(data["data"], null, '\t'),-1);
-                    $("#feedback").text(JSON.stringify(data["data"], null, 2));
+                    //$("#feedback").text(JSON.stringify(data["data"], null, 2));
+                    $("#feedback").text(data["data"]);
                     break;
                 case "cli":
                     // display the message in the #feedback alert box
@@ -584,8 +592,17 @@
             }
         });
         
-        $("#fire_cli").click(function(){
+        $("#fire_cli").click(function(e){
             // fire the cli command
+            e.preventDefault();
+            var clival = $("#input_cli").val();
+            console.log("fireing cli: " + clival);
+            send_msg(method="cli", data=clival);
+        });
+
+        $("#help_cli").click(function(e){
+            // dislplay all commands short help
+            e.preventDefault();
             var clival = $("#input_cli").val();
             console.log("fireing cli: " + clival);
             send_msg(method="cli", data=clival);
