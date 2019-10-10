@@ -436,12 +436,14 @@
             send_msg(method="disconnect", data=current_connection);
         });
         
-        $("#inc_scan_cursor").click(function(){
+        $("#inc_scan_cursor").click(function(e){
             // update the value of the current_key
-            $("#feedback").removeClass();
-            $("#feedback").addClass("alert alert-info");
+            e.preventDefault();
+            //$("#feedback").removeClass();
+            //$("#feedback").addClass("alert alert-info");
+
             var key=$("#current_key").text();
-            $("#feedback").text("Scanning: " + last_scan_cursor);
+            //$("#feedback").text("Scanning: " + last_scan_cursor);
             $("#scan_cursor").text(last_scan_cursor);
             send_msg(method="scan", data={
                 "cursor": last_scan_cursor,
@@ -450,12 +452,13 @@
             );
         });
 
-        $("#scan_reset").click(function(){
+        $("#scan_reset").click(function(e){
             // update the value of the current_key
-            $("#feedback").removeClass();
-            $("#feedback").addClass("alert alert-info");
+            //$("#feedback").removeClass();
+            //$("#feedback").addClass("alert alert-info");
+            e.preventDefault();
             var key=$("#current_key").text();
-            $("#feedback").text("reset scan cursor and pattern: " + last_scan_cursor);
+            //$("#feedback").text("reset scan cursor and pattern: " + last_scan_cursor);
             last_scan_cursor = 0;
             $("#scan_cursor").text(last_scan_cursor);
             $("#keyscan").val("");
@@ -564,8 +567,6 @@
                 $("#help_card_subtitle").text(current_command["args"]);
                 $("#help_card_text").text(current_command["summary"]);
                 $("#help_card_details").html(current_command["help_text"]);
-
-
                 console.log("Current command: " + current_command["name"] + " " + current_command["args"]);
                 console.log("awesomleted. " + this.value);
             });
