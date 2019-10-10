@@ -149,6 +149,11 @@
                             <input type="text" class="form-control" id="current_key_input" value="">
                         </div>
                     </div>
+                    <!-- 
+                        *************
+                        the editor
+                        *************
+                    -->
                     <div class="row" style="margin-right: 5px">
                         <div id="reditor" style="height: 300px; width: 100%"></div>
                         <span id="current_key" style="display: none">
@@ -226,9 +231,12 @@
                 <div class="card scroll_card" id="help_card" style="width: 100%;">
                     <div class="card-body">
                         <h5 class="card-title" id="help_card_title">Adapted Help</h5>
-                        <h6 class="card-subtitle mb-2 text-muted" id="help_card_subtitle">For Redis commands</h6>
-                        <p class="card-text" id="help_card_text">[Patterns], Sections</p>
-                        <p class="card-text" id="help_card_details"> And the full help text details with examples will be displayed here..</p>
+                        <h6 class="card-subtitle mb-2 text-muted" id="help_card_subtitle">[Patterns], Sections</h6>
+                        <p class="card-text" id="help_card_text">For Redis commands</p>
+                        <p class="card-text" id="help_card_details"> 
+                            And the full help text details with examples will be displayed here when you select a command 
+                            from the autocomplete list...
+                        </p>
                         <a href="https://redis.io/commands" class="card-link" id="help_card_link">
                            ..all commands</a>
                     </div>
