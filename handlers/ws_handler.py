@@ -228,11 +228,18 @@ class EchoWebSocket(PowWsHandler):
         """
         r=self.get_client(message["client_id"])
         #r.init_from_dict( message["data"]["value"])
-        print(f'create:  {message["data"]["value"]}')
+        command = str.lower(message["data"]["command"])
+        print(f'create:  {message["data"]["value"]}, command: {command}')
         data=json.loads(message["data"]["value"])
-        result=r.db.set(message["data"]["key"], json.dumps(data))
+        if command == "set":
+            result=r.db.set(message["data"]["key"], json.dumps(data))
+            print(f"set: ...: {message['data']['key']} : {message['data']['value']}")
+        elif command == "hmset":
+            # https://stackoverflow.com/questions/32276493/how-to-store-and-retrieve-a-dictionary-with-redis
+            result = r.db.hmset(message["data"]["key"], data)
+            print(f"hmset: ...: {message['data']['key']} : {message['data']['value']}")
         #result=r.upsert_set()
-        print(f"set: ...: {message['data']['key']} : {message['data']['value']}")
+       
         if result:
             message="Created {} successfully".format(message["data"]["key"])
         data = {
@@ -246,15 +253,19 @@ class EchoWebSocket(PowWsHandler):
     def update(self, message):
         """ 
             update the value for the given key.
-
         """
         r=self.get_client(message["client_id"])
         #r.init_from_dict( message["data"]["value"])
-        print(f'update:  {message["data"]["value"]}')
+        #print(f'update:  {message["data"]["value"]}')
         data=json.loads(message["data"]["value"])
-        result=r.db.set(message["data"]["key"], json.dumps(data))
-        #result=r.upsert_set()
-        print(f"set: ...: {message['data']['key']} : {message['data']['value']}")
+        command = str.lower(message["data"]["command"])
+        if command == "set":
+            result=r.db.set(message["data"]["key"], json.dumps(data))
+            print(f"update set: ...: {message['data']['key']} : {message['data']['value']}")
+        elif command == "hmset":
+            # https://stackoverflow.com/questions/32276493/how-to-store-and-retrieve-a-dictionary-with-redis
+            result = r.db.hmset(message["data"]["key"], data)
+            print(f"update hmset: ...: {message['data']['key']} : {message['data']['value']}")
         if result:
             message="Update for {} successfull".format(message["data"]["key"])
         data = {

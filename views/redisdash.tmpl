@@ -131,7 +131,6 @@
                                 <input type="text" class="form-control" 
                                     autocomplete="off"
                                     id="keyscan" placeholder="key1:key2:*">
-                            
                         </form>
                     </div>
                     <div class="row" >
@@ -139,7 +138,6 @@
 
                         </ul>
                     </div>
-
                 </div>
 
                 <div class="col-lg-8" >
@@ -183,9 +181,9 @@
         </div>
     </div>
      <!-- 
-        ***********
+        *******************
         the server_info
-        ***********
+        *******************
     -->
     <div class="container mt-1" id="serverinfo_div">
         <div class="row" style="margin-left: 5px">
@@ -202,9 +200,9 @@
         </div>
     </div>
     <!-- 
-        ***********
+        *************
         the cli 
-        ***********
+        *************
     -->
     <div class="container" id="cli_div">
         <div class="row" style="margin-top: 20px;">
@@ -218,7 +216,6 @@
                     <span class="input-group-btn">
                         <button class="btn btn-info btn-sm btn-cli" id="help_cli"><i class="fas fa-question-circle"></i></button>
                     </span>
-                    
                 </div>
                 <div class="" style="width: 100%; overflow-y: auto !important;
                             overflow-x: auto !important; max-height: 850px">
@@ -457,7 +454,6 @@
             e.preventDefault();
             //$("#feedback").removeClass();
             //$("#feedback").addClass("alert alert-info");
-
             var key=$("#current_key").text();
             //$("#feedback").text("Scanning: " + last_scan_cursor);
             $("#scan_cursor").text(last_scan_cursor);
@@ -523,8 +519,7 @@
         $("#link_cli").click(function(e){
             // show the cli div
             e.preventDefault();
-            console.log("cli link: " + e)
-            
+            console.log("cli link: " + e);
             var key=$("#current_key").text();
             // prepare the UI
             $("#cli_div").show();
@@ -588,7 +583,6 @@
             });
             awesomplete.list = commands;
             //send_msg(method="update", data={"value": editor.getValue(), "key" : key });
-            
         });
         
         $("#input_cli").keyup(function(event){
@@ -622,7 +616,9 @@
             $("#feedback").addClass("alert alert-info");
             var key=$("#current_key").text();
             $("#feedback").text("Updating key: " + key);
-            send_msg(method="update", data={"value": editor.getValue(), "key" : key });
+            console.log("Update: " + key + " value: " + editor.getValue());
+            set_command = $("#set_option").val();
+            send_msg(method="update", data={"value": editor.getValue(), "key" : key, "command" : set_command });
         });
 
         $("#btn_create").click(function(){
@@ -632,9 +628,10 @@
             $("#feedback").removeClass();
             $("#feedback").addClass("alert alert-info");
             var key=$("#current_key_input").val()
-            $("#feedback").text("Updating key: " + key);
+            $("#feedback").text("creating key: " + key);
             console.log("Create: " + key + " value: " + editor.getValue());
-            send_msg(method="create", data={"value": editor.getValue(), "key" : key });
+            set_command = $("#set_option").val();
+            send_msg(method="create", data={"value": editor.getValue(), "key" : key, "command" : set_command });
         });
 
         $("#btn_delete").click(function(){
