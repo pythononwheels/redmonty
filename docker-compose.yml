@@ -1,0 +1,19 @@
+version: '3'
+services:
+  redmonty:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - /home/khz/db:/usr/local/redmonty/db
+    environment:
+      - PYTHONPATH=/usr/local
+    links:
+      - redis
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+
