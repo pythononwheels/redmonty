@@ -62,6 +62,7 @@ myapp = {
     "datetime_format"       :   "%Y-%m-%d %H:%M:%S",
     "html_datetime_format"  :   "%Y-%m-%dT%H:%M:%S",
     "internal_fields"   :   ["created_at", "last_updated", "_uuid"],  # these are not included in the scaffolded views at all
+    "password_fields"   :   ["passwd", "password"], # fields with these names will be displayed as input type password
     "default_rest_route":   "list",
     "list_separator"    :   " ",
     "pwhash_method"     :   "pbkdf2:sha256",      # see: http://werkzeug.pocoo.org/docs/0.14/utils/#module-werkzeug.security
