@@ -15,3 +15,11 @@ https://ace.c9.io/build/kitchen-sink.html
 #pyhton  logo thans
 
 <a href="https://iconscout.com/icon/python-13" target="_blank">Python Logo Icon</a> by <a href="https://iconscout.com/contributors/icons8" target="_blank">Icons8</a>
+
+
+
+
+# dockerize
+stand alone command
+
+docker run --rm --name redmonty -v /home/khz/db/:/usr/local/redmonty/db -ti -e PYTHONPATH="/usr/local" -p 8080:8080 --network=host redmonty

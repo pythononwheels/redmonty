@@ -405,6 +405,7 @@
                     break;                
                 case "error":
                     // update the info boxes
+                    modalLoading.init(false);
                     console.log("Message Error : " + JSON.stringify(data, null, 2)  );
                     if (data["redirect"] == true ){
                         // show the error message and redirect afterwards
@@ -414,7 +415,10 @@
                         $("#result").text(data["data"]);
                         $("#result").show();
                     }
+		    alert(JSON.stringify(data, null, 2));
+		    window.location.replace("/connections_list");
                     break;
+
                 default:
                     console.log("unhandled message type: " + data["type"] + " ...Should not happen!")
             }

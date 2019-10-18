@@ -14,9 +14,10 @@ class RedisBaseModel(ModelObject):
     # 
     # set the DB
     # 
-    Dbinfo=generate_connection()
-    db=Dbinfo.db
-
+    #Dbinfo=generate_connection()
+    #db=Dbinfo.db
+    Dbinfo=None
+    db=None
     def set_connection(self, redis_conf=None):
         """
              data from the dict

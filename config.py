@@ -150,7 +150,7 @@ database = {
     },
     "redis" : {
         "dbname"    :   0,  # zero starting numeric index for redis
-        "host"      :   "localhost",
+        "host"      :   "redis",
         "port"      :   6379,
         "passwd"    :   "",
         "strict"    :   True
