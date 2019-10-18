@@ -257,7 +257,20 @@
     <script>
         
         var clientId = generateUUID();
-        var ws = new WebSocket("ws://localhost:8080/websocket");
+
+	// 
+	// open the websocket
+	//
+        var loc = window.location, new_uri;
+	if (loc.protocol === "https:") {
+	    new_uri = "wss:";
+	} else {
+	    new_uri = "ws:";
+	}
+	new_uri += "//" + loc.host + "/websocket";
+	console.log(new_uri);
+        var ws = new WebSocket(new_uri);
+
         var editor = ace.edit("reditor");
         var serverinfo_data;
         var last_scan_cursor = 0;
@@ -652,7 +665,8 @@
         }
         function view_docready(){    
             // called from the parent view's docready function.
-            modalLoading.init(true);
+            
+            // modalLoading.init(true);
             $("#serverinfo_div").hide();
             $("#cli_div").hide();
             $("#scan_cursor").text(last_scan_cursor);

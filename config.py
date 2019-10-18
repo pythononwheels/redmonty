@@ -11,7 +11,7 @@ import datetime
 
 server_settings = {
     "protocol"          :   "http://",
-    "host"              :   "localhost",
+    "host"              :   "0.0.0.0",
     "port"              :   8080,
     "debug"             :   True,
     "debug_print"       :   True,
@@ -118,7 +118,7 @@ database = {
 
     },
     "tinydb" : {
-        "dbname"    :   os.path.join(BASE_DIR, 'tiny.db'),
+        "dbname"    :   '/usr/local/redmonty/db/tiny.db',
         "host"      :   None,       
         "port"      :   None,   
         "user"      :   None,

@@ -53,7 +53,7 @@ def generate_connection(redis_conf=None):
                     decode_responses=True
                 )
         print(" ... setting it up for RedisDB: " + conn_str )
-        
+        print(f"redis ping... {redisdb.ping()}")
         return Dbinfo(db=redisdb, collection=None)
     except:
         raise Exception("I had a problem setting up RedisDB")
