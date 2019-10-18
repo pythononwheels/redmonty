@@ -21,7 +21,7 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-from models.tinydb.rediscommand import Rediscommand 
+#from models.tinydb.rediscommand import Rediscommand 
 
 BASE_URL = "https://redis.io/commands"
 
@@ -81,17 +81,21 @@ for x,li in enumerate(content_lis):
         print(str(e))
         raise e
 
-for elem in all_commands:
-    print(40*"=")
-    print(f"Inserting {elem}")
-    r = Rediscommand()
-    r.init_from_dict(all_commands[elem])
-    print(r)
-    #what = input("upsert or skip ... (u|s)")
-    #if what == "u":
-    #    r.upsert()
-    #else:
-    #    pass
-    r.upsert()
+import json
+with open('redis_help.json', 'w') as fp:
+    json.dump(all_commands, fp)
+
+#for elem in all_commands:
+#    print(40*"=")
+#    print(f"Inserting {elem}")
+#    r = Rediscommand()
+#    r.init_from_dict(all_commands[elem])
+#    print(r)
+#    #what = input("upsert or skip ... (u|s)")
+#    #if what == "u":
+#    #    r.upsert()
+#    #else:
+#    #    pass
+#    r.upsert()
 
 

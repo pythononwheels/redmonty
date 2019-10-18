@@ -274,7 +274,7 @@
         var editor = ace.edit("reditor");
         var serverinfo_data;
         var last_scan_cursor = 0;
-        var commands_full = [];
+        var commands_full;
         var commands = [];
         var awesomplete;
         //editor.setTheme("ace/theme/dracula");
@@ -555,9 +555,12 @@
                     // key is the current item number ++ for each item in data
                     // val is the  i(th) data
                     commands.push(val["name"]);
+                    
                     //$("#commands").append('<option value="' + val["_uuid"] + '">' + val["name"] + '</option>');
                 });
                 //console.log(commands);
+                //console.log(JSON.stringify(commands_full));
+
             });
             var input = document.getElementById("input_cli");
             awesomplete = new Awesomplete(input,
@@ -571,7 +574,9 @@
             //
             $("#input_cli").on('awesomplete-selectcomplete',function(){
                 // map the cuurent command to the commands_full array
-                var current_command = commands_full.find(x => x.name === this.value);
+                //var current_command = commands_full.find(x => x.name === this.value);
+                var current_command =commands_full[this.value];
+                                
                 var title = current_command["name"] + " " + current_command["args"];
                 // update the tooltip
                 /*
