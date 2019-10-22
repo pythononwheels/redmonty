@@ -29,7 +29,7 @@ class EchoWebSocket(PowWsHandler):
         if c:
             return c
         else:
-            return Redisclient()
+            return Redisinfo()
     def remove_client(self, clientID=None):
         """
             remove a client from the list.

@@ -44,6 +44,8 @@ class Rediscommand(PowHandler):
 
     def show(self, id=None):
         m=Model()
+        with open("filename", 'r') as f:
+            datastore = json.load(f)
         res=m.find_by_id(id)
         self.success(message="rediscommand show", data=res)
     
@@ -51,8 +53,6 @@ class Rediscommand(PowHandler):
     def getcommands(self):
         m=Model()
         res = m.get_all()  
-        #for elem in res:
-        #    del elem["help_text"]
         self.success(message="rediscommand, send commands", format="json", data=res)  
 
     def list(self):
