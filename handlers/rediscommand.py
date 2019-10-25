@@ -52,7 +52,11 @@ class Rediscommand(PowHandler):
     @route("/getcommands", dispatch=["GET"])
     def getcommands(self):
         m=Model()
-        res = m.get_all()  
+        #res = m.get_all()  
+        with open("redis_help.json", "r") as f:
+            res = json.load(f)
+        #for elem in res:
+        #    del elem["help_text"]
         self.success(message="rediscommand, send commands", format="json", data=res)  
 
     def list(self):

@@ -66,6 +66,7 @@ class Connections(PowHandler):
         else:
             r = self.model.find(self.model.where("id") == id)
             self.set_secure_cookie("redisui:current_connection", str(id))
+            print(f"connecting to: {str(r)}")
             if r.type=="redis":
                 self.render("redisdash.tmpl", connected=True, connection_id=str(id), show_spinner=True)
             elif r.type == "tinydb":

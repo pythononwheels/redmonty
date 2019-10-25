@@ -6,17 +6,17 @@ from tinydb import TinyDB, Query
 from tinydb.storages import JSONStorage
 from tinydb_serialization import SerializationMiddleware
 from redmonty.models.tinydb.serializer import DateTimeSerializer
-
+from powlib import Dbinfo
     
-def generate_connection(tinydb_conf=None):
+def generate_connection(db_conf=None):
     """
         create a connection from th given conf
-        or from config.py (if tinydb_conf == None)
+        or from config.py (if db_conf == None)
     """
-    if tinydb_conf == None:
+    if db_conf == None:
         tinydb = database.get("tinydb", None)        
     else:
-        tinydb = tinydb_conf
+        tinydb = db_conf
     
     serialization = SerializationMiddleware()
     serialization.register_serializer(DateTimeSerializer(), 'TinyDate')
@@ -24,7 +24,8 @@ def generate_connection(tinydb_conf=None):
     if tinydb:
         conn_str = tinydb["dbname"]
         print(" ... setting it up for tinyDB: " + conn_str)
-        return TinyDB(conn_str, storage=serialization)
+        tdb=  TinyDB(conn_str, storage=serialization)
+        return Dbinfo(db=tdb, collection=None)
     else:
         raise Exception("I had a problem setting up tinyDB")
     

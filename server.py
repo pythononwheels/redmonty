@@ -91,7 +91,7 @@ def main(stdout=False):
         print(60*"-")
         print("starting the PythonOnWheels server Server ")
         print(60*"-")
-        print("visit: http://localhost:" + str(app_settings["port"]))
+        print("visit: http://" + app_settings["host"] +  ":" + str(app_settings["port"]))
         print("starting...")
     http_server = tornado.httpserver.HTTPServer(app)
     http_server.listen(app_settings["port"])

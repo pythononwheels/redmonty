@@ -11,7 +11,7 @@ import datetime
 
 server_settings = {
     "protocol"          :   "http://",
-    "host"              :   "localhost",
+    "host"              :   "0.0.0.0",
     "port"              :   8080,
     "debug"             :   True,
     "debug_print"       :   True,
@@ -62,6 +62,7 @@ myapp = {
     "datetime_format"       :   "%Y-%m-%d %H:%M:%S",
     "html_datetime_format"  :   "%Y-%m-%dT%H:%M:%S",
     "internal_fields"   :   ["created_at", "last_updated", "_uuid"],  # these are not included in the scaffolded views at all
+    "password_fields"   :   ["passwd", "password"], # fields with these names will be displayed as input type password
     "default_rest_route":   "list",
     "list_separator"    :   " ",
     "pwhash_method"     :   "pbkdf2:sha256",      # see: http://werkzeug.pocoo.org/docs/0.14/utils/#module-werkzeug.security
@@ -118,7 +119,7 @@ database = {
 
     },
     "tinydb" : {
-        "dbname"    :   os.path.join(BASE_DIR, 'tiny.db'),
+        "dbname"    :   './tiny.db',
         "host"      :   None,       
         "port"      :   None,   
         "user"      :   None,
@@ -150,7 +151,7 @@ database = {
     },
     "redis" : {
         "dbname"    :   0,  # zero starting numeric index for redis
-        "host"      :   "localhost",
+        "host"      :   "redis",
         "port"      :   6379,
         "passwd"    :   "",
         "strict"    :   True

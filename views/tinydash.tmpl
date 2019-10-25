@@ -45,10 +45,7 @@
                                 
                                 <h5>DB: <span id="dbname"></span></h5>
                                 <select class="form-control" id="exampleFormControlSelect1" disabled>
-                                    <option selected>0</option>
-                                    {% for x in db.tables()  %}
-                                        <option>{{x}}</option>
-                                    {% end %}}
+                                    Tables
                                 </select>
                                 
                                 <p class="card-text">&nbsp;</p>
@@ -216,7 +213,7 @@
     <script>
         
         var clientId = generateUUID();
-        var ws = new WebSocket("ws://localhost:8080/websocket");
+        var ws = new WebSocket("ws://localhost:8080/websocket_tiny");
         var editor = ace.edit("reditor");
         var serverinfo_data;
         var last_scan_cursor = 0;
@@ -231,7 +228,8 @@
             });
         */
         var current_connection = "{{connection_id}}";
-
+        // prep the links
+        $("#link_redisdb").text("TinyDB");
         ws.onopen = function() {
                 data={
                     "client_id"     : clientId,
@@ -482,6 +480,7 @@
             editor.setValue("");
         }
         function view_docready(){    
+            
             
             // called from the parent view's docready function.
             modalLoading.init(true);

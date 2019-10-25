@@ -257,11 +257,24 @@
     <script>
         
         var clientId = generateUUID();
-        var ws = new WebSocket("ws://localhost:8080/websocket");
+
+	// 
+	// open the websocket
+	//
+        var loc = window.location, new_uri;
+	if (loc.protocol === "https:") {
+	    new_uri = "wss:";
+	} else {
+	    new_uri = "ws:";
+	}
+	new_uri += "//" + loc.host + "/websocket";
+	console.log(new_uri);
+        var ws = new WebSocket(new_uri);
+
         var editor = ace.edit("reditor");
         var serverinfo_data;
         var last_scan_cursor = 0;
-        var commands_full = [];
+        var commands_full;
         var commands = [];
         var awesomplete;
         //editor.setTheme("ace/theme/dracula");
@@ -392,6 +405,7 @@
                     break;                
                 case "error":
                     // update the info boxes
+                    modalLoading.init(false);
                     console.log("Message Error : " + JSON.stringify(data, null, 2)  );
                     if (data["redirect"] == true ){
                         // show the error message and redirect afterwards
@@ -401,7 +415,10 @@
                         $("#result").text(data["data"]);
                         $("#result").show();
                     }
+		    alert(JSON.stringify(data, null, 2));
+		    window.location.replace("/connections_list");
                     break;
+
                 default:
                     console.log("unhandled message type: " + data["type"] + " ...Should not happen!")
             }
@@ -538,9 +555,12 @@
                     // key is the current item number ++ for each item in data
                     // val is the  i(th) data
                     commands.push(val["name"]);
+                    
                     //$("#commands").append('<option value="' + val["_uuid"] + '">' + val["name"] + '</option>');
                 });
                 //console.log(commands);
+                //console.log(JSON.stringify(commands_full));
+
             });
             var input = document.getElementById("input_cli");
             awesomplete = new Awesomplete(input,
@@ -554,7 +574,9 @@
             //
             $("#input_cli").on('awesomplete-selectcomplete',function(){
                 // map the cuurent command to the commands_full array
-                var current_command = commands_full.find(x => x.name === this.value);
+                //var current_command = commands_full.find(x => x.name === this.value);
+                var current_command =commands_full[this.value];
+                                
                 var title = current_command["name"] + " " + current_command["args"];
                 // update the tooltip
                 /*
@@ -652,7 +674,8 @@
         }
         function view_docready(){    
             // called from the parent view's docready function.
-            modalLoading.init(true);
+            
+            // modalLoading.init(true);
             $("#serverinfo_div").hide();
             $("#cli_div").hide();
             $("#scan_cursor").text(last_scan_cursor);

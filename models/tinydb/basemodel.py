@@ -17,13 +17,26 @@ class TinyBaseModel(ModelObject):
     
     where=where
     Query=Query()
-    db=generate_connection()
+    db=None
     _use_pow_schema_attrs = True
     
+
+    def set_connection(self, db_conf=None):
+        """
+             format of the dict is the same as in config.py
+             
+        """
+        try:
+            Dbinfo = generate_connection(db_conf=db_conf)
+            self.__class__.db=Dbinfo.db
+        except Exception as e:
+            raise e
     def init_on_load(self, *args, **kwargs):
-        
+        """
+            Everything that needs to be initialized for the model.
+        """
         super().init_on_load()
-        
+        self.set_connection()
         #self.id = uuid.uuid4()
         #self.created_at = datetime.datetime.now()
         #self.last_updated = datetime.datetime.now()
