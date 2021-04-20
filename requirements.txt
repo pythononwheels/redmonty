@@ -24,7 +24,7 @@ marshmallow-sqlalchemy==0.10.0
 packaging==16.8
 #pandas==0.24.2
 plotly==4.0.0
-py==1.4.33
+py==1.10.0
 pymongo==3.6.0
 PyMySQL==0.9.3
 pyparsing==2.2.0
